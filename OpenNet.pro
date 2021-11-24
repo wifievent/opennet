@@ -15,6 +15,7 @@ SOURCES += \
     dhcphdr.cpp \
     ethhdr.cpp \
     icmphdr.cpp \
+    intf.cpp \
     ip.cpp \
     ip6.cpp \
     ip6hdr.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     dhcphdr.h \
     ethhdr.h \
     icmphdr.h \
+    intf.h \
     ip.h \
     ip6.h \
     ip6hdr.h \

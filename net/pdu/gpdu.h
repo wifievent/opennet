@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "base/gbuf.h"
+#include "net/base/gbuf.h"
 #include "net/gnet.h"
 #include "net/gmac.h"
 #include "net/gip.h"

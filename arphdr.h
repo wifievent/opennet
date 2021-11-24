@@ -3,7 +3,7 @@
 #include "opennet.h"
 #include "mac.h"
 #include "ip.h"
-class arphdr
+class ArpHdr
 {
 public:
     enum{
@@ -18,8 +18,8 @@ public:
     uint8_t op_;
     mac smac_;
     mac tmac_;
-    ip sip;
-    ip tip;
+    Ip sip;
+    Ip tip;
 };
-
+typedef ArpHdr *PArpHdr;
 #endif // ARPHDR_H

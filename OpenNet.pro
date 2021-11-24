@@ -14,13 +14,17 @@ SOURCES += \
     buf.cpp \
     dhcphdr.cpp \
     ethhdr.cpp \
+    icmphdr.cpp \
     ip.cpp \
+    ip6.cpp \
+    ip6hdr.cpp \
     iphdr.cpp \
     iphdr.cpp \
     mac.cpp \
     opennet.cpp \
     packet.cpp \
-    tcphdr.cpp
+    tcphdr.cpp \
+    udphdr.cpp
 
 HEADERS += \
     OpenNet_global.h \
@@ -28,13 +32,17 @@ HEADERS += \
     buf.h \
     dhcphdr.h \
     ethhdr.h \
+    icmphdr.h \
     ip.h \
+    ip6.h \
+    ip6hdr.h \
     iphdr.h \
     iphdr.h \
     mac.h \
     opennet.h \
     packet.h \
-    tcphdr.h
+    tcphdr.h \
+    udphdr.h
 
 # Default rules for deployment.
 unix {

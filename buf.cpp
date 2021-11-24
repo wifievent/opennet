@@ -1,7 +1,7 @@
 #include "buf.h"
 
-buf::buf(char* packet_, int size_)
+buf::buf(char* data, int size)
 {
-    packet = packet_;
-    size = size_;
+    data_ = data;
+    size_ = size;
 }

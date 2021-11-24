@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include <arpa/inet.h>
 
 using namespace std;
 

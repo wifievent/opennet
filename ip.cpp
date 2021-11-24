@@ -1,6 +1,6 @@
 #include "ip.h"
 
-ip::ip(string str) {
+Ip::Ip(string& str) {
     char tmp[14];
     strcpy(tmp,str.c_str());
     char * token = strtok(tmp,".");
@@ -11,7 +11,7 @@ ip::ip(string str) {
     }
 }
 
-ip::ip(uint32_t ip){
+Ip::Ip(uint32_t ip){
     int cnt = 0;
     int div = 100000;
     while(div>0){

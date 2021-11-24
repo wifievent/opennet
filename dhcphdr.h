@@ -1,6 +1,6 @@
 #ifndef DHCPHDR_H
 #define DHCPHDR_H
-
+#include "opennet.h"
 
 class dhcphdr
 {

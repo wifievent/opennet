@@ -19,6 +19,7 @@ SOURCES += \
     iphdr.cpp \
     mac.cpp \
     opennet.cpp \
+    packet.cpp \
     tcphdr.cpp
 
 HEADERS += \
@@ -32,6 +33,7 @@ HEADERS += \
     iphdr.h \
     mac.h \
     opennet.h \
+    packet.h \
     tcphdr.h
 
 # Default rules for deployment.

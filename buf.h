@@ -5,7 +5,10 @@
 class buf
 {
 public:
-    buf();
+    buf(char* packet, int size);
+private:
+    char* packet;
+    int size;
 };
 
 #endif // BUF_H

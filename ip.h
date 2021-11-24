@@ -6,7 +6,8 @@ class ip
 {
 public:
     ip(string str);
-    ip(uint32_t tmp);
+    ip(uint32_t ip);
+    const static int SIZE = 4;
 private:
     char ip_[4];
 };

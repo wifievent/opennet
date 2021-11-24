@@ -6,6 +6,10 @@
 class Iphdr
 {
 public:
+    enum{
+      TCP = 0x06,
+      UDP = 0x17
+    };
     uint8_t version;
     uint8_t length;
     uint16_t tlen;
@@ -17,6 +21,7 @@ public:
     uint16_t checksum;
     ip sip;
     ip dip;
+    uint8_t p(){return protocol;}
 };
 
 #endif // IPHDR_H

@@ -1,3 +1,4 @@
+
 #ifndef PACKET_H
 #define PACKET_H
 #include "opennet.h"
@@ -28,3 +29,4 @@ public:
 };
 
 #endif // PACKET_H
+

@@ -1,20 +1,32 @@
-#pragma once
 
-#include <pcap.h>
-#include "pdu/gpdu.h"
-#include "pdu/gethhdr.h"
-#include "pdu/garphdr.h"
-#include "pdu/giphdr.h"
-#include "pdu/gip6hdr.h"
-#include "pdu/gtcphdr.h"
-#include "pdu/gudphdr.h"
-#include "pdu/gicmphdr.h"
-
-#include "pdu/gradiotaphdr.h"
-#include "pdu/gdot11hdr.h"
-
-class Packet {
+#ifndef PACKET_H
+#define PACKET_H
+#include "opennet.h"
+#include "ethhdr.h"
+#include "iphdr.h"
+#include "tcphdr.h"
+#include "arphdr.h"
+#include "udphdr.h"
+#include "buf.h"
+class packet
+{
 public:
-  Packet();
-  ~Packet();
+    enum Result{
+      Ok,
+      Fail
+    };
+    EthHdr* ethHdr_{nullptr};
+    IpHdr* ipHdr_{nullptr};
+    UdpHdr* udpHdr_{nullptr};
+    TcpHdr* tcpHdr_{nullptr};
+    ArpHdr* arpHdr_{nullptr};
+    buf udpData;
+    buf tcpData;
+
+    struct {
+        bool block_{false};
+    } ctrl;
 };
+
+#endif // PACKET_H
+

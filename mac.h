@@ -2,16 +2,18 @@
 #define MAC_H
 #include "opennet.h"
 
-class mac
+class Mac
 {
 public:
-    mac(string str);
-    mac(uint32_t mac);
-    mac nullMac();
-    mac broadcastMac();
+    Mac() {}
+    Mac(const Mac& r) { memcpy(this->mac_, r.mac_, SIZE); }
+    Mac(const gbyte* r) { memcpy(this->mac_, r, SIZE); }
+    Mac(const string& str);
+    static Mac& nullMac();
+    static Mac& broadcastMac();
     const static int SIZE = 6;
 private:
-    char mac_[6];
+    gbyte mac_[SIZE];
 };
-
+typedef Mac *PMac;
 #endif // MAC_H

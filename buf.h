@@ -6,9 +6,12 @@ class buf
 {
 public:
     buf(){};
-    buf(char* data, int size);
-    u_char* data_;
-    int size_;
+    buf(unsigned char* data, size_t size);
+    gbyte* data_;
+    size_t size_;
+    bool valid() {
+        return data_ != nullptr;
+    }
 };
 
 #endif // BUF_H

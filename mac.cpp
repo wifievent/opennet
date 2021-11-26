@@ -1,31 +1,12 @@
 #include "mac.h"
-mac::mac(string str) {
-    if(str.length()!=17){
-        printf("wrong input");
-        return;
+Mac::Mac(const string& r) {
+    std::string s;
+    for (char ch : r) {
+        if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f'))
+            s += ch;
     }
-    char tmp[17];
-    strcpy(tmp,str.c_str());
-    char * token = strtok(tmp,":");
-    int cnt = 0;
-    while(token!=NULL){
-        mac_[cnt++] = *token;
-        token = strtok(NULL,":");
+    int res = sscanf(s.c_str(), "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx", &mac_[0], &mac_[1], &mac_[2], &mac_[3], &mac_[4], &mac_[5]);
+    if (res != SIZE) {
+        memset(mac_, 0, SIZE);
     }
-}
-
-mac::mac(uint32_t mac) {
-    int cnt = 0;
-    int div = 1000000000;
-    while(div>0){
-        mac_[cnt++] = mac/div;
-        mac %= div;
-        div/=100;
-    }
-}
-mac mac::nullMac(){
-    return mac("00:00:00:00:00:00");
-}
-mac mac::broadcastMac(){
-    return mac("FF:FF:FF:FF:FF:FF");
 }

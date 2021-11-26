@@ -11,12 +11,13 @@ public:
         Ip4 = 0x800,
         Ip6 = 0x86DD
     };
-    mac dmac_;
-    mac smac_;
+    Mac dmac_;
+    Mac smac_;
     uint16_t type_;
+
     uint16_t type(){ return ntohs(type_); }
-    mac smac(){ return smac_; }
-    mac dmac(){ return dmac_; }
+    Mac smac(){ return smac_; }
+    Mac dmac(){ return dmac_; }
 };
 typedef EthHdr *PEthHdr;
 #endif // ETHHDR_H

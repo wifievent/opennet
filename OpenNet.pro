@@ -24,6 +24,9 @@ SOURCES += \
     mac.cpp \
     opennet.cpp \
     packet.cpp \
+    rtm.cpp \
+    rtmentry.cpp \
+    tcpblock.cpp \
     tcphdr.cpp \
     udphdr.cpp
 
@@ -43,6 +46,9 @@ HEADERS += \
     mac.h \
     opennet.h \
     packet.h \
+    rtm.h \
+    rtmentry.h \
+    tcpblock.h \
     tcphdr.h \
     udphdr.h
 

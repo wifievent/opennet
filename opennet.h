@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 #include <arpa/inet.h>
-
+typedef unsigned char gbyte, *pbyte;
 using namespace std;
 
 class OPENNET_EXPORT OpenNet

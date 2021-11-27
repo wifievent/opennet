@@ -10,6 +10,8 @@ struct Intf
     Ip gateway_{0};
     string name_;
     Ip ip_and_mask_{0};
+    int index_;
+    string desc_;
 
     Intf(){}
     Ip gateway(){return gateway_;}

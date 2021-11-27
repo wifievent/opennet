@@ -20,7 +20,7 @@ void TcpBlock::block(Packet* packet_){
         forward->tcpHdr_->acknum_ = packet_->tcpHdr_->acknum_;
         forward->tcpHdr_->flag_ = uint16_t(0b10110);
         forward->tcpHdr_->calcChecksum(forward->ipHdr_,forward->tcpHdr_);
-
+        writer_->write(forward);
     }else if(backwardFin_){
         Packet* backward = packet_;
 
@@ -41,5 +41,6 @@ void TcpBlock::block(Packet* packet_){
         backward->tcpHdr_->hlen_ = ((packet_->tcpHdr_->off()*4 + backwardFinMsg_.size())/4 & 0xF) << 4;
         backward->tcpHdr_->flag_ = uint16_t(0b10011);
         backward->tcpHdr_->checksum_ = backward->tcpHdr_->calcChecksum(backward->ipHdr_,backward->tcpHdr_);
+        writer_->write(backward);
     }
 }

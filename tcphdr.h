@@ -17,8 +17,10 @@ public:
     uint16_t dport(){ return ntohs(dport_); }
     uint16_t sport(){ return ntohs(sport_); }
     uint8_t off(){ return (hlen_ & 0xF0) >> 4; }
-    uint16_t sum(){ return ntohs(checksum_);}
-    Buf parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_);
-    uint16_t calcChecksum(IpHdr* iphdr, TcpHdr* tcphdr);
+    uint16_t sum(){ return ntohs(checksum_); }
+    uint32_t seqnum(){ return ntohl(seqnum_); }
+    uint32_t acknum(){ return ntohl(acknum_); }
+    static Buf parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_);
+    static uint16_t calcChecksum(IpHdr* iphdr, TcpHdr* tcphdr);
 };
 typedef TcpHdr *PTcpHdr;

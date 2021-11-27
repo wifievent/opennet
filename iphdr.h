@@ -5,7 +5,8 @@ struct IpHdr
 {
     enum {
       TCP = 0x06,
-      UDP = 0x17
+      UDP = 0x17,
+      ICMP = 0x01
     };
 
     uint8_t version_;
@@ -26,7 +27,7 @@ struct IpHdr
     Ip dip(){ return dip_; }
     Ip sip(){ return sip_; }
     uint16_t sum(){ return ntohs(checksum_);}
-    uint16_t calcChecksum(IpHdr* iphdr);
+    static uint16_t calcChecksum(IpHdr* iphdr);
 };
 typedef IpHdr *PIpHdr;
 

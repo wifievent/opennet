@@ -9,4 +9,8 @@ struct Buf
     bool valid() {
         return data_ != nullptr;
     }
+    void clear(){
+        data_= nullptr;
+        size_ = 0;
+    }
 };

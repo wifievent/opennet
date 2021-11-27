@@ -1,6 +1,6 @@
 #include "buf.h"
 
-buf::buf(char* data, int size)
+Buf::Buf(unsigned char* data, size_t size)
 {
     data_ = data;
     size_ = size;

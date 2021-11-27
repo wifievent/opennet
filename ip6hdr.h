@@ -1,11 +1,7 @@
-#ifndef IP6HDR_H
-#define IP6HDR_H
-
 #include "opennet.h"
 #include "ip6.h"
-class Ip6Hdr
+struct Ip6Hdr
 {
-public:
     uint8_t v_pr_;
     uint8_t flags_[3];
     uint16_t en_;
@@ -23,4 +19,4 @@ public:
     Ip6 dip() { return dip_; }
 };
 typedef Ip6Hdr *PIp6Hdr;
-#endif // IP6HDR_H
+

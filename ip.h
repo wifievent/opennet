@@ -1,18 +1,16 @@
-#ifndef IP_H
-#define IP_H
 #include "opennet.h"
 
-class Ip
+struct Ip
 {
-public:
     Ip(){};
     Ip(const string& r);
     Ip(const uint32_t r) : ip_(r) {}
     const static int SIZE = 4;
+
+    operator uint32_t() const { return ip_; } // default -> not explicit == auto
     explicit operator string() const;
     Ip& operator = (const Ip& r) { ip_ = r.ip_; return *this; }
+
 private:
     uint32_t ip_;
 };
-
-#endif // IP_H

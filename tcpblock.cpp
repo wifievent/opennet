@@ -1,8 +1,8 @@
 #include "tcpblock.h"
 
-void TcpBlock::block(packet* packet_){
+void TcpBlock::block(Packet* packet_){
     if(forwardRst_){
-        packet* forward = packet_;
+        Packet* forward = packet_;
 
         //ethernet
         forward->ethHdr_->smac_ = intf_.mac_;
@@ -22,7 +22,7 @@ void TcpBlock::block(packet* packet_){
         forward->tcpHdr_->calcChecksum(forward->ipHdr_,forward->tcpHdr_);
 
     }else if(backwardFin_){
-        packet* backward = packet_;
+        Packet* backward = packet_;
 
         //ethernet
         backward->ethHdr_->smac_ = intf_.mac_;

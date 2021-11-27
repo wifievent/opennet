@@ -1,6 +1,3 @@
-
-#ifndef PACKET_H
-#define PACKET_H
 #include "opennet.h"
 #include "ethhdr.h"
 #include "iphdr.h"
@@ -8,9 +5,8 @@
 #include "arphdr.h"
 #include "udphdr.h"
 #include "buf.h"
-class packet
+struct Packet
 {
-public:
     enum Result{
       Ok,
       Fail
@@ -20,13 +16,12 @@ public:
     UdpHdr* udpHdr_{nullptr};
     TcpHdr* tcpHdr_{nullptr};
     ArpHdr* arpHdr_{nullptr};
-    buf udpData;
-    buf tcpData;
+
+    Buf udpData;
+    Buf tcpData;
 
     struct {
         bool block_{false};
     } ctrl;
 };
-
-#endif // PACKET_H
 

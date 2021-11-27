@@ -1,26 +1,23 @@
-#ifndef DHCPHDR_H
-#define DHCPHDR_H
 #include "opennet.h"
 #include "ip.h"
 #include "mac.h"
-class DhcpHdr
+struct DhcpHdr
 {
-public:
-    uint8_t mtype;
-    uint8_t htype;
-    uint8_t hlen;
-    uint8_t hops;
-    uint32_t tid;
-    uint16_t secElap;
-    uint16_t bFlag;
-    Ip clientIp;
-    Ip yourIp;
-    Ip serverIp;
-    Ip gatewayIp;
-    mac cliMac;
-    uint8_t padding[10];
-    uint8_t add[192];
-    uint16_t cookie;
+    uint8_t mtype_;
+    uint8_t htype_;
+    uint8_t hlen_;
+    uint8_t hops_;
+    uint32_t tid_;
+    uint16_t secElap_;
+    uint16_t bFlag_;
+    Ip clientIp_;
+    Ip yourIp_;
+    Ip serverIp_;
+    Ip gatewayIp_;
+    Mac cliMac_;
+    uint8_t padding_[10];
+    uint8_t add_[192];
+    uint16_t cookie_;
 
     struct Option {
         uint8_t type_;
@@ -47,5 +44,3 @@ public:
         End = 255
     };
 };
-
-#endif // DHCPHDR_H

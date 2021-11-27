@@ -1,12 +1,9 @@
-#ifndef ETHHDR_H
-#define ETHHDR_H
 #include "opennet.h"
 #include "ip.h"
 #include "mac.h"
-class EthHdr
+struct EthHdr
 {
-public:
-    enum{
+    enum {
         Arp = 0x806,
         Ip4 = 0x800,
         Ip6 = 0x86DD
@@ -20,4 +17,3 @@ public:
     Mac dmac(){ return dmac_; }
 };
 typedef EthHdr *PEthHdr;
-#endif // ETHHDR_H

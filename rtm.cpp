@@ -4,7 +4,6 @@ Rtm::Rtm() {
     std::string command("ip route show table 0");
     FILE* p = popen(command.data(), "r");
     if (p == nullptr) {
-        qFatal("failed to call %s", command.data());
         return;
     }
 
@@ -12,6 +11,7 @@ Rtm::Rtm() {
         char buf[256];
         if (std::fgets(buf, 256, p) == nullptr) break;
         RtmEntry entry;
+        //for android
         if (checkA(buf, &entry))
             push_back(entry);
         else if (checkB(buf, &entry))

@@ -8,9 +8,12 @@
 struct Packet
 {
     enum Result{
-      Ok,
-      Fail
+      Eof = -2,
+      Fail = -1,
+      None = 0,
+      Ok = 1,
     };
+    
     EthHdr* ethHdr_{nullptr};
     IpHdr* ipHdr_{nullptr};
     UdpHdr* udpHdr_{nullptr};

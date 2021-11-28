@@ -19,9 +19,9 @@ public:
 	} PathType;
 
 public:
-	Packet::Result read(Packet* packet) override;
-	Packet::Result write(Buf buf) override;
-	Packet::Result write(Packet* packet) override;
+	Packet::Result read(Packet* packet);
+	Packet::Result write(Buf buf);
+	Packet::Result write(Packet* packet);
 	virtual Packet::Result relay(Packet* packet);
 	virtual Packet::Result drop(Packet* packet);
 

@@ -31,7 +31,6 @@ SOURCES += \
     udphdr.cpp
 
 HEADERS += \
-    OpenNet_global.h \
     arphdr.h \
     buf.h \
     dhcphdr.h \

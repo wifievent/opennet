@@ -1,10 +1,8 @@
-#ifndef TCPHDR_H
-#define TCPHDR_H
 #include "opennet.h"
 #include "buf.h"
 #include "iphdr.h"
 
-class TcpHdr
+struct TcpHdr
 {
 public:
     uint16_t sport_;
@@ -18,11 +16,9 @@ public:
 
     uint16_t dport(){ return ntohs(dport_); }
     uint16_t sport(){ return ntohs(sport_); }
-    uint8_t off(){ return (hlen_&0xF0)>>4; }
+    uint8_t off(){ return (hlen_ & 0xF0) >> 4; }
     uint16_t sum(){ return ntohs(checksum_);}
-    buf parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_);
+    Buf parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_);
     uint16_t calcChecksum(IpHdr* iphdr, TcpHdr* tcphdr);
 };
 typedef TcpHdr *PTcpHdr;
-
-#endif // TCPHDR_H

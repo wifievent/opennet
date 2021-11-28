@@ -1,15 +1,13 @@
-#ifndef IPHDR_H
-#define IPHDR_H
 #include "opennet.h"
 #include "ip.h"
 #include "mac.h"
-class IpHdr
+struct IpHdr
 {
-public:
-    enum{
+    enum {
       TCP = 0x06,
       UDP = 0x17
     };
+
     uint8_t version_;
     uint8_t len_;
     uint16_t hlen_;
@@ -32,4 +30,3 @@ public:
 };
 typedef IpHdr *PIpHdr;
 
-#endif // IPHDR_H

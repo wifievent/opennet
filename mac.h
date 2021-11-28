@@ -1,10 +1,7 @@
-#ifndef MAC_H
-#define MAC_H
 #include "opennet.h"
 
-class Mac
+struct Mac
 {
-public:
     Mac() {}
     Mac(const Mac& r) { memcpy(this->mac_, r.mac_, SIZE); }
     Mac(const gbyte* r) { memcpy(this->mac_, r, SIZE); }
@@ -16,4 +13,3 @@ private:
     gbyte mac_[SIZE];
 };
 typedef Mac *PMac;
-#endif // MAC_H

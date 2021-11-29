@@ -12,18 +12,25 @@ CONFIG += c++11
 SOURCES += \
     arphdr.cpp \
     buf.cpp \
+    capture.cpp \
     dhcphdr.cpp \
     ethhdr.cpp \
     icmphdr.cpp \
     intf.cpp \
+    intflist.cpp \
     ip.cpp \
     ip6.cpp \
     ip6hdr.cpp \
     iphdr.cpp \
     iphdr.cpp \
     mac.cpp \
+    net.cpp \
+    obj.cpp \
     opennet.cpp \
     packet.cpp \
+    pcapcapture.cpp \
+    pcapdevice.cpp \
+    pdu.cpp \
     rtm.cpp \
     rtmentry.cpp \
     tcpblock.cpp \
@@ -33,18 +40,25 @@ SOURCES += \
 HEADERS += \
     arphdr.h \
     buf.h \
+    capture.h \
     dhcphdr.h \
     ethhdr.h \
     icmphdr.h \
     intf.h \
+    intflist.h \
     ip.h \
     ip6.h \
     ip6hdr.h \
     iphdr.h \
     iphdr.h \
     mac.h \
+    net.h \
+    obj.h \
     opennet.h \
     packet.h \
+    pcapcapture.h \
+    pcapdevice.h \
+    pdu.h \
     rtm.h \
     rtmentry.h \
     tcpblock.h \

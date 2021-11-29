@@ -37,6 +37,8 @@ struct Packet
     } ctrl;
     static Dlt intToDlt(int dataLink);
     void clear();
-    void parse();
-};
+    virtual void parse();
 
+protected:
+	Dlt dlt_{Null};
+};

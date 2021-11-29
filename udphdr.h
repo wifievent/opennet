@@ -1,6 +1,6 @@
 #include "opennet.h"
 #include "buf.h"
-struct UdpHdr
+struct UdpHdr final
 {
     uint16_t sport;
     uint16_t dport;

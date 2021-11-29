@@ -2,7 +2,7 @@
 #include "buf.h"
 #include "iphdr.h"
 
-struct TcpHdr
+struct TcpHdr final
 {
 public:
     uint16_t sport_;
@@ -22,5 +22,6 @@ public:
     uint32_t acknum(){ return ntohl(acknum_); }
     static Buf parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_);
     static uint16_t calcChecksum(IpHdr* iphdr, TcpHdr* tcphdr);
+  
 };
 typedef TcpHdr *PTcpHdr;

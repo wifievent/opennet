@@ -32,28 +32,28 @@ Packet::Result Capture::read(Packet* packet) {
 	return Packet::Fail;
 }
 
-Packet::Result GCapture::write(Buf buf) {
+Packet::Result Capture::write(Buf buf) {
 	(void)buf;
 	// virtual function call
 	std::cout << "virtual function call" << std::endl;
 	return Packet::Fail;
 }
 
-Packet::Result GCapture::write(Packet* packet) {
+Packet::Result Capture::write(Packet* packet) {
 	(void)packet;
 	// virtual function call
 	std::cout << "virtual function call" << std::endl;
 	return Packet::Fail;
 }
 
-Packet::Result GCapture::relay(Packet* packet) {
+Packet::Result Capture::relay(Packet* packet) {
 	(void)packet;
 	// virtual function call
 	std::cout << "virtual function call" << std::endl;
 	return Packet::Fail;
 }
 
-Packet::Result GCapture::drop(Packet* packet) {
+Packet::Result Capture::drop(Packet* packet) {
 	(void)packet;
   // virtual function call
 	std::cout << "virtual function call" << std::endl;

@@ -28,6 +28,7 @@ struct Packet
     ArpHdr* arpHdr_{nullptr};
     IcmpHdr* icmpHdr_{nullptr};
 
+    struct timeval ts_;
     Buf buf_;
     Buf udpData_;
     Buf tcpData_;
@@ -35,8 +36,13 @@ struct Packet
     struct {
         bool block_{false};
     } ctrl;
+
+    Dlt dlt() { return dlt_; };
     static Dlt intToDlt(int dataLink);
     void clear();
     void parse();
+    void copyFrom(Packet* source, Buf newBuf);
+protected:
+    Dlt dlt_{Null};
 };
 

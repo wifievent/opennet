@@ -1,14 +1,16 @@
 #include "packet.h"
 #include "opennet.h"
 #include "intf.h"
-struct TcpBlock : StateObj
+#include "obj.h"
+#include "pcapdevice.h"
+struct TcpBlock : Obj
 {
 public:
     Intf intf_;
     bool enabled_ = true;
     bool forwardRst_ = true;
     bool backwardFin_ = false;
-    PcapDeviceWrite* writer_;
+    PcapDevice* writer_;
     string forwardFinMsg_;
     string backwardFinMsg_;
     int bufSize_ = 32768;

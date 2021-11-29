@@ -77,3 +77,11 @@ Packet::Dlt Packet::intToDlt(int dataLink) {
     }
     return res;
 }
+
+void Packet::copyFrom(Packet* source, Buf newBuf) {
+    clear();
+    ts_ = source->ts_;
+    buf_ = newBuf;
+    ctrl = source->ctrl;
+    parse();
+}

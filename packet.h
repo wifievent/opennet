@@ -7,24 +7,33 @@
 #include "buf.h"
 struct Packet
 {
-    enum Result{
-      Eof = -2,
-      Fail = -1,
-      None = 0,
-      Ok = 1,
-    };
-    
-    EthHdr* ethHdr_{nullptr};
-    IpHdr* ipHdr_{nullptr};
-    UdpHdr* udpHdr_{nullptr};
-    TcpHdr* tcpHdr_{nullptr};
-    ArpHdr* arpHdr_{nullptr};
+  enum Result
+  {
+    Eof = -2,
+    Fail = -1,
+    None = 0,
+    Ok = 1,
+  };
 
-    Buf udpData;
-    Buf tcpData;
+  typedef enum
+  {
+    Eth,
+    Ip,
+    Dot11,
+    Null,
+  } Dlt;
 
-    struct {
-        bool block_{false};
-    } ctrl;
+  EthHdr *ethHdr_{nullptr};
+  IpHdr *ipHdr_{nullptr};
+  UdpHdr *udpHdr_{nullptr};
+  TcpHdr *tcpHdr_{nullptr};
+  ArpHdr *arpHdr_{nullptr};
+
+  Buf udpData;
+  Buf tcpData;
+
+  struct
+  {
+    bool block_{false};
+  } ctrl;
 };
-

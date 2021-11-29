@@ -2,11 +2,21 @@
 
 #include "packet.h";
 #include "obj.h";
+#include "packet.h"
+#include "ethpacket.h"
+#include "ippacket.h"
 
 class Capture : Obj {
 public:
 	Capture();
 	~Capture();
+
+public:
+bool enabled_{true};
+bool autoParse_{true};
+
+protected:
+	bool autoRead_{true};
 
 protected:
 	bool doOpen() override;

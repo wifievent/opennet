@@ -38,6 +38,8 @@ struct Packet
     bool block_{false};
   } ctrl;
 
+  virtual void parse();
+
 protected:
 	Dlt dlt_{Null};
 };

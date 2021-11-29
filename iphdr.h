@@ -4,8 +4,8 @@
 struct IpHdr
 {
     enum {
-      TCP = 0x06,
-      UDP = 0x17
+      Tcp = 0x06,
+      Udp = 0x17
     };
 
     uint8_t version_;

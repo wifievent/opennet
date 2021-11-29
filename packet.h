@@ -30,8 +30,9 @@ struct Packet
   TcpHdr *tcpHdr_{nullptr};
   ArpHdr *arpHdr_{nullptr};
 
-  Buf udpData;
-  Buf tcpData;
+  Buf buf_;
+  Buf udpData_;
+  Buf tcpData_;
 
   struct
   {

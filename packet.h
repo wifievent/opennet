@@ -23,6 +23,7 @@ struct Packet
     Null,
   } Dlt;
 
+  Dlt dlt() { return dlt_; };
   EthHdr *ethHdr_{nullptr};
   IpHdr *ipHdr_{nullptr};
   UdpHdr *udpHdr_{nullptr};
@@ -36,4 +37,7 @@ struct Packet
   {
     bool block_{false};
   } ctrl;
+
+protected:
+	Dlt dlt_{Null};
 };

@@ -1,5 +1,5 @@
 #include "tcpblock.h"
-bool TcpBlock::doOpen() {    
+bool TcpBlock::doOpen() {
 
     if (writer_ == nullptr) {
         return false;
@@ -17,7 +17,8 @@ bool TcpBlock::doClose() {
 
     return true;
 }
-void TcpBlock::sendBlockPacket(Packet* packet, Direction direction, BlockType blockType, uint32_t seq, uint32_t ack, string msg) {
+
+void TcpBlock::sendBlockPacket(Packet* packet, TcpBlock::Direction direction, TcpBlock::BlockType blockType, uint32_t seq, uint32_t ack, std::string msg) {
     Packet* blockPacket = nullptr;
     size_t copyLen;
 
@@ -25,6 +26,11 @@ void TcpBlock::sendBlockPacket(Packet* packet, Direction direction, BlockType bl
     switch (dlt) {
         case Packet::Eth: blockPacket = &blockEthPacket_; copyLen = sizeof(EthHdr) + sizeof(IpHdr) + sizeof(TcpHdr); break;
         case Packet::Ip: blockPacket = &blockIpPacket_; copyLen = sizeof(IpHdr) + sizeof(TcpHdr); break;
+        case Packet::Dot11: blockPacket = nullptr; break;
+        case Packet::Null: blockPacket = nullptr; break;
+    }
+    if (blockPacket == nullptr) {
+        return;
     }
 
     if (int(copyLen) > bufSize_) {
@@ -33,15 +39,15 @@ void TcpBlock::sendBlockPacket(Packet* packet, Direction direction, BlockType bl
     memcpy(blockBuf_, packet->buf_.data_, copyLen);
     blockPacket->copyFrom(packet, Buf(blockBuf_, copyLen));
 
-    TcpHdr* tcpHdr = packet->tcpHdr_;
+    TcpHdr* tcpHdr = blockPacket->tcpHdr_;
 
     //
     // Data
     //
     if (blockType == Fin) {
-        packet->tcpData_.data_ = pbyte(tcpHdr) + sizeof(TcpHdr);
-        memcpy(packet->tcpData_.data_, msg.c_str(), msg.size());
-        packet->tcpData_.size_ = backwardFinMsgStr_.size();
+        blockPacket->tcpData_.data_ = pbyte(tcpHdr) + sizeof(TcpHdr);
+        memcpy(blockPacket->tcpData_.data_, msg.c_str(), msg.size());
+        blockPacket->tcpData_.size_ = msg.size();
     }
 
     //
@@ -63,7 +69,7 @@ void TcpBlock::sendBlockPacket(Packet* packet, Direction direction, BlockType bl
     //
     // IP
     //
-    IpHdr* ipHdr = packet->ipHdr_;
+    IpHdr* ipHdr = blockPacket->ipHdr_;
     if (blockType == Rst)
         ipHdr->hlen_ = htons(sizeof(IpHdr) + sizeof(TcpHdr));
     else
@@ -83,16 +89,15 @@ void TcpBlock::sendBlockPacket(Packet* packet, Direction direction, BlockType bl
     //
     // Ethernet
     //
-    Mac backupsMac, backupdMac;
-    if (packet->ethHdr_ != nullptr) {
-        EthHdr* ethHdr = packet->ethHdr_;
-        backupsMac = ethHdr->smac();
-        backupdMac = ethHdr->dmac();
-        Mac myMac = writer_->intf()->mac();
+    PcapDevice* pcapDeviceWrite = dynamic_cast<PcapDevice*>(writer_);
+    if (pcapDeviceWrite != nullptr && packet->ethHdr_ != nullptr) {
+        EthHdr* ethHdr = blockPacket->ethHdr_;
+        Mac myMac = pcapDeviceWrite->intf()->mac();
         if (direction == Backward) {
             ethHdr->dmac_ = ethHdr->smac();
             ethHdr->smac_ = myMac;
         } else {
+            //ethHdr->dmac_ = ethHdr->dmac();
             ethHdr->smac_ = myMac;
         }
     }
@@ -102,16 +107,10 @@ void TcpBlock::sendBlockPacket(Packet* packet, Direction direction, BlockType bl
     if (dlt == Packet::Eth) bufSize += sizeof(EthHdr);
     bufSize += sizeof(IpHdr) + sizeof(TcpHdr);
     if (blockType == Fin) bufSize += msg.size();
-    packet->buf_.size_ = bufSize;
+    blockPacket->buf_.size_ = bufSize;
 
     // write
-    writer_->write(packet);
-
-    if (packet->ethHdr_ != nullptr) {
-        EthHdr* ethHdr = packet->ethHdr_;
-        ethHdr->smac_ = backupsMac;
-        ethHdr->dmac_ = backupdMac;
-    }
+    writer_->write(blockPacket);
 }
 
 void TcpBlock::block(Packet* packet) {
@@ -137,22 +136,19 @@ void TcpBlock::block(Packet* packet) {
     uint32_t ack = tcpHdr->acknum();
 
     bool _blocked = false;
-    if (forwardRst_) {
+    if (forwardBlockType_ == Rst) {
         if (synExist && !ackExist)
             sendBlockPacket(packet, Forward, Rst, seq, 0); // useless
         else
             sendBlockPacket(packet, Forward, Rst, nextSeq, ack);
         _blocked = true;
     }
-
-    if (backwardFin_) {
+    if (backwardBlockType_ == Fin) {
         if (!synExist) {
             sendBlockPacket(packet, Backward, Fin, ack, nextSeq, backwardFinMsgStr_);
             _blocked = true;
         }
     }
-
-    if (forwardRst_)
+    if (forwardBlockType_ != None)
         packet->ctrl.block_ = true;
 }
-

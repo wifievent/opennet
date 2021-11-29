@@ -82,4 +82,3 @@ SOURCES += \
         ../src/win/wipadapterinfo.cpp \
         ../src/win/wipforwardtable.cpp
 }
-

@@ -6,7 +6,6 @@ struct EthHdr
     enum {
         Arp = 0x806,
         Ip4 = 0x800,
-        Ip6 = 0x86DD
     };
     Mac dmac_;
     Mac smac_;

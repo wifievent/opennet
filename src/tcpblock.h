@@ -1,10 +1,7 @@
-#include "packet.h"
-#include "opennet.h"
 #include "intf.h"
 #include "obj.h"
 #include "pcapdevice.h"
 #include "ethpacket.h"
-#include "ippacket.h"
 struct TcpBlock : Obj
 {
 public:

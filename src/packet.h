@@ -1,17 +1,18 @@
-#include "opennet.h"
+#pragma once
 #include "ethhdr.h"
 #include "iphdr.h"
 #include "tcphdr.h"
 #include "arphdr.h"
 #include "udphdr.h"
 #include "icmphdr.h"
-#include "buf.h"
 struct Packet
 {
     Packet() { clear();}
     enum Result{
       Ok = 1,
-      Fail = -1
+      Fail = -1,
+      Eof = -2,
+      None = 0,
     };
 
     typedef enum {
@@ -40,7 +41,7 @@ struct Packet
     Dlt dlt() { return dlt_; };
     static Dlt intToDlt(int dataLink);
     void clear();
-    void parse();
+    virtual void parse();
     void copyFrom(Packet* source, Buf newBuf);
 protected:
     Dlt dlt_{Null};

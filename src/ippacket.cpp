@@ -15,12 +15,12 @@ void IpPacket::parse() {
 	}
 
 	switch (proto) {
-		case IpHdr::Tcp: // Tcp
+        case IpHdr::TCP: // Tcp
 			tcpHdr_ = PTcpHdr(p);
 			// p += tcpHdr_->off() * 4;
 			tcpData_ = TcpHdr::parseData(ipHdr_, tcpHdr_);
 			break;
-		case IpHdr::Udp: // Udp
+        case IpHdr::UDP: // Udp
 			udpHdr_ = PUdpHdr(p);
 			// p += sizeof(GUdpHdr);
 			udpData_ = UdpHdr::parseData(udpHdr_);

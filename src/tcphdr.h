@@ -1,5 +1,3 @@
-#include "opennet.h"
-#include "buf.h"
 #include "iphdr.h"
 
 struct TcpHdr

@@ -1,5 +1,5 @@
+#pragma once
 #include "opennet.h"
-
 struct Ip
 {
     Ip(){};

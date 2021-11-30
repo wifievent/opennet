@@ -1,4 +1,3 @@
-#include "intflist.h"
 #include "rtm.h"
 struct NetInfo // excute only one
 {

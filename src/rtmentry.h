@@ -1,6 +1,4 @@
-#include "opennet.h"
-#include "ip.h"
-#include "intf.h"
+#include "intflist.h"
 struct RtmEntry
 {
     Ip dst_{0};

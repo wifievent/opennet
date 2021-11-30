@@ -1,4 +1,3 @@
-#include "opennet.h"
 #include "ip6.h"
 struct Ip6Hdr
 {

@@ -1,6 +1,6 @@
 #include "capture.h"
 
-Capture::~GCapture() {
+Capture::~Capture() {
 	close();
 }
 
@@ -99,7 +99,6 @@ void Capture::run() {
         // warning
         std::cout << "relay return " << res << std::endl;
 			}*/
-		}
-	}
-	// emit closed();
+    }
 }
+	// emit closed();

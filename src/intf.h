@@ -1,7 +1,5 @@
-#include "opennet.h"
-#include "ip.h"
-#include "mac.h"
-#include "rtmentry.h"
+#pragma once
+#include "buf.h"
 struct Intf
 {
     Ip ip_{0};

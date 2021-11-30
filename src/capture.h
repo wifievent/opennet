@@ -1,10 +1,5 @@
-#pragma once
-
-#include "packet.h";
 #include "obj.h";
-#include "packet.h"
 #include "ethpacket.h"
-#include "ippacket.h"
 
 class Capture : Obj {
 public:

@@ -1,7 +1,5 @@
 #pragma once
-#include "opennet.h"
-#include "mac.h"
-#include "ip.h"
+#include "buf.h"
 struct ArpHdr
 {
     enum {

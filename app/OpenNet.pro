@@ -6,7 +6,7 @@ CONFIG += c99
 CONFIG += W_BUILD
 include($${PWD}/../opennet.pri)
 DESTDIR = $${PWD}/../bin
-
+INCLUDEPATH += $${PWD}/../include
 SOURCES += \
     ../src/arphdr.cpp \
     ../src/buf.cpp \

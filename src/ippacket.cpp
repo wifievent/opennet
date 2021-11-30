@@ -7,10 +7,7 @@ void IpPacket::parse() {
 		case 0x40: // version 4
 			ipHdr_ = PIpHdr(p);
 			proto = ipHdr_->p();
-			p += ipHdr_->hl() * 4;
-			break;
-		default:
-			proto = 0; // unknown
+            p += ipHdr_->hlen() * 4;
 			break;
 	}
 
@@ -24,9 +21,6 @@ void IpPacket::parse() {
 			udpHdr_ = PUdpHdr(p);
 			// p += sizeof(GUdpHdr);
 			udpData_ = UdpHdr::parseData(udpHdr_);
-			break;
-		default:
-			// qDebug() << "unknown protocol" << proto; // gilgil temp 2019.08.19
 			break;
 	}
 }

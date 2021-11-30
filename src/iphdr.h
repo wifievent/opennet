@@ -8,10 +8,9 @@ struct IpHdr
       UDP = 0x17,
       ICMP = 0x01
     };
-
+    uint8_t hhlen_; //header length
     uint8_t version_;
-    uint8_t len_;
-    uint16_t hlen_;
+    uint16_t tlen_; //tot length
     uint16_t identification_;
     uint8_t flag_;
     uint8_t offset_;
@@ -21,9 +20,9 @@ struct IpHdr
     Ip sip_;
     Ip dip_;
 
-    uint8_t len(){return len_;}
+    uint8_t hlen(){return hhlen_;}
     uint8_t p(){return protocol_;}
-    uint16_t hl(){return ntohs(hlen_);}
+    uint16_t tlen(){return ntohs(tlen_);}
     Ip dip(){ return dip_; }
     Ip sip(){ return sip_; }
     uint16_t sum(){ return ntohs(checksum_);}

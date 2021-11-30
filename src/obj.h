@@ -11,8 +11,8 @@ public:
 		Opened, // 3
 	} State;
 
-  Obj();
-  ~Obj();
+    Obj();
+    virtual ~Obj();
 
 	bool isActive();
 

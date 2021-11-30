@@ -7,6 +7,7 @@ struct Buf
     Buf(unsigned char* data, size_t size);
     gbyte* data_;
     size_t size_;
+
     bool valid() {
         return data_ != nullptr;
     }

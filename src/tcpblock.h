@@ -5,19 +5,17 @@
 struct TcpBlock : Obj
 {
 public:
-    enum BlockType {
-        None,
-        Rst,
-        Fin
-    };
+    bool forwardRst_ = false;
+    bool forwardFin_ = false;
+    bool backwardRst_ = false;
+    bool backwardFin_ = false;
 
     Intf intf_;
     bool enabled_ = true;
     PcapDevice* writer_;
-    string backwardFinMsgStr_;
+    string backwardFinMsg_;
     int bufSize_ = 32768;
-    BlockType forwardBlockType_{Rst};
-    BlockType backwardBlockType_{Rst};
+    void block(Packet* packet);
 
 protected:
     EthPacket blockEthPacket_;
@@ -27,11 +25,6 @@ protected:
     bool doOpen() override;
     bool doClose() override;
 
-    enum Direction {
-        Forward,
-        Backward
-    };
-
-    void block(Packet* packet);
-    void sendBlockPacket(Packet* packet, Direction direction, BlockType blockType, uint32_t seq, uint32_t ack, string msg = "");
+    void sendForwardBlockPacket(Packet* packet);
+    void sendBackwardBlockPacket(Packet* packet);
 };

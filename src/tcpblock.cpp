@@ -1,6 +1,5 @@
 #include "tcpblock.h"
 bool TcpBlock::doOpen() {
-
     if (writer_ == nullptr) {
         return false;
     }
@@ -18,99 +17,68 @@ bool TcpBlock::doClose() {
     return true;
 }
 
-void TcpBlock::sendBlockPacket(Packet* packet, TcpBlock::Direction direction, TcpBlock::BlockType blockType, uint32_t seq, uint32_t ack, std::string msg) {
-    Packet* blockPacket = nullptr;
-    size_t copyLen;
+void TcpBlock::sendBackwardBlockPacket(Packet* packet) {
+    Packet* backward = packet;
 
-    Packet::Dlt dlt = packet->dlt();
-    switch (dlt) {
-        case Packet::Eth: blockPacket = &blockEthPacket_; copyLen = sizeof(EthHdr) + sizeof(IpHdr) + sizeof(TcpHdr); break;
-        case Packet::Ip: blockPacket = &blockIpPacket_; copyLen = sizeof(IpHdr) + sizeof(TcpHdr); break;
-        case Packet::Dot11: blockPacket = nullptr; break;
-        case Packet::Null: blockPacket = nullptr; break;
-    }
-    if (blockPacket == nullptr) {
-        return;
-    }
+    //Data
+    packet->tcpData_.data_ = pbyte(packet->tcpHdr_) + sizeof(TcpHdr);
+    memcpy(backward->tcpData_.data_,backwardFinMsg_.c_str(),backwardFinMsg_.size());
+    backward->tcpData_.size_ = backwardFinMsg_.size();
 
-    if (int(copyLen) > bufSize_) {
-        return;
-    }
-    memcpy(blockBuf_, packet->buf_.data_, copyLen);
-    blockPacket->copyFrom(packet, Buf(blockBuf_, copyLen));
+    //ethernet
+    backward->ethHdr_->smac_ = intf_.mac_;
+    backward->ethHdr_->dmac_ = packet->ethHdr_->smac_;
 
-    TcpHdr* tcpHdr = blockPacket->tcpHdr_;
+    //ip
+    backward->ipHdr_->hhlen_ = 0x44;
+    backward->ipHdr_->sip_ = packet->ipHdr_->dip_;
+    backward->ipHdr_->dip_ = packet->ipHdr_->sip_;
+    backward->ipHdr_->tlen_ = packet->ipHdr_->hlen()*4 + packet->tcpHdr_->off()*4 + backwardFinMsg_.size();
+    backward->ipHdr_->ttl_ = 128;
+    backward->ipHdr_->checksum_ = backward->ipHdr_->calcChecksum(backward->ipHdr_);
 
-    //
-    // Data
-    //
-    if (blockType == Fin) {
-        blockPacket->tcpData_.data_ = pbyte(tcpHdr) + sizeof(TcpHdr);
-        memcpy(blockPacket->tcpData_.data_, msg.c_str(), msg.size());
-        blockPacket->tcpData_.size_ = msg.size();
-    }
+    //tcp
+    backward->tcpHdr_->sport_ = packet->tcpHdr_->dport_;
+    backward->tcpHdr_->dport_ = packet->tcpHdr_->sport_;
+    backward->tcpHdr_->seqnum_ = packet->tcpHdr_->acknum_;
+    backward->tcpHdr_->acknum_ = packet->tcpHdr_->seqnum_ + backwardFinMsg_.size();
+    backward->tcpHdr_->hlen_ = ((packet->tcpHdr_->off()*4 + backwardFinMsg_.size())/4 & 0xF) << 4;
+    backward->tcpHdr_->flag_ = uint16_t(0b10011);
+    backward->tcpHdr_->checksum_ = backward->tcpHdr_->calcChecksum(backward->ipHdr_,backward->tcpHdr_);
 
-    //
-    // TCP
-    //
-    if (direction == Backward)
-        std::swap(tcpHdr->sport_, tcpHdr->dport_);
-    tcpHdr->seqnum_ = htonl(seq);
-    tcpHdr->acknum_ = htonl(ack);
-    if (blockType == Rst) {
-        tcpHdr->flag_ = TcpHdr::Rst | TcpHdr::Ack;
-        tcpHdr->win_ = 0;
-    } else {
-        tcpHdr->flag_ = TcpHdr::Fin | TcpHdr::Ack | TcpHdr::Psh;
-    }
-    tcpHdr->hlen_ = (sizeof(TcpHdr) / 4) << 4;
-    tcpHdr->flag_ &= ~TcpHdr::Syn;
+    //buf
+    backward->buf_.size_ = sizeof(EthHdr)+ sizeof(IpHdr) + sizeof(TcpHdr) + backwardFinMsg_.size();
+    writer_->write(backward);
+}
 
-    //
-    // IP
-    //
-    IpHdr* ipHdr = blockPacket->ipHdr_;
-    if (blockType == Rst)
-        ipHdr->hlen_ = htons(sizeof(IpHdr) + sizeof(TcpHdr));
-    else
-        ipHdr->hlen_ = htons(sizeof(IpHdr) + sizeof(TcpHdr) + msg.size());
-    ipHdr->len_ = 0x44;
-    if (direction == Backward) {
-        ipHdr->ttl_ = 0x80;
-        std::swap(ipHdr->sip_, ipHdr->dip_);
-    }
+void TcpBlock::sendForwardBlockPacket(Packet* packet) {
+    Packet* forward = packet;
 
-    //
-    // checksum
-    //
-    tcpHdr->checksum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
-    ipHdr->checksum_ = htons(IpHdr::calcChecksum(ipHdr));
+    //ethernet
+    forward->ethHdr_->smac_ = intf_.mac_;
+    forward->ethHdr_->dmac_ = packet->ethHdr_->dmac_;
 
-    //
-    // Ethernet
-    //
-    PcapDevice* pcapDeviceWrite = dynamic_cast<PcapDevice*>(writer_);
-    if (pcapDeviceWrite != nullptr && packet->ethHdr_ != nullptr) {
-        EthHdr* ethHdr = blockPacket->ethHdr_;
-        Mac myMac = pcapDeviceWrite->intf()->mac();
-        if (direction == Backward) {
-            ethHdr->dmac_ = ethHdr->smac();
-            ethHdr->smac_ = myMac;
-        } else {
-            //ethHdr->dmac_ = ethHdr->dmac();
-            ethHdr->smac_ = myMac;
-        }
-    }
+    //ip
+    forward->ipHdr_->hhlen_ = 0x44;
+    forward->ipHdr_->sip_ = packet->ipHdr_->sip_;
+    forward->ipHdr_->dip_ = packet->ipHdr_->dip_;
+    forward->ipHdr_->tlen_ = packet->ipHdr_->hlen()*4 + packet->tcpHdr_->off()*4;
+    forward->ipHdr_->ttl_ = packet->ipHdr_->ttl_;
+    forward->ipHdr_->checksum_ = forward->ipHdr_->calcChecksum(forward->ipHdr_);
 
-    // buf size
-    size_t bufSize = 0;
-    if (dlt == Packet::Eth) bufSize += sizeof(EthHdr);
-    bufSize += sizeof(IpHdr) + sizeof(TcpHdr);
-    if (blockType == Fin) bufSize += msg.size();
-    blockPacket->buf_.size_ = bufSize;
+    //tcp
+    forward->tcpHdr_->sport_ = packet->tcpHdr_->sport_;
+    forward->tcpHdr_->dport_ = packet->tcpHdr_->dport_;
+    forward->tcpHdr_->seqnum_ = packet->tcpHdr_->seqnum_;
+    forward->tcpHdr_->acknum_ = packet->tcpHdr_->acknum_;
+    forward->tcpHdr_->hlen_ = (sizeof(TcpHdr)/4) << 4;
+    forward->tcpHdr_->flag_ = uint16_t(0b10110);
+    forward->tcpHdr_->calcChecksum(forward->ipHdr_,forward->tcpHdr_);
 
-    // write
-    writer_->write(blockPacket);
+    //buf
+    forward->buf_.size_ = sizeof(EthHdr) + sizeof(IpHdr) + sizeof(TcpHdr);
+
+    writer_->write(forward);
 }
 
 void TcpBlock::block(Packet* packet) {
@@ -122,33 +90,14 @@ void TcpBlock::block(Packet* packet) {
         return;
     }
 
-    bool synExist = (packet->tcpHdr_->flag() & TcpHdr::Syn) != 0;
-    bool rstExist = (packet->tcpHdr_->flag() & TcpHdr::Rst) != 0;
-    bool finExist = (packet->tcpHdr_->flag() & TcpHdr::Fin) != 0;
-    bool ackExist = (packet->tcpHdr_->flag() & TcpHdr::Ack) != 0;
-    if (rstExist || finExist) return;
-
-    TcpHdr* tcpHdr = packet->tcpHdr_;
-
-    size_t tcpDataSize = packet->tcpData_.size_;
-    uint32_t seq = tcpHdr->seqnum();
-    uint32_t nextSeq = seq + tcpDataSize + (synExist || finExist ? 1 : 0);
-    uint32_t ack = tcpHdr->acknum();
-
     bool _blocked = false;
-    if (forwardBlockType_ == Rst) {
-        if (synExist && !ackExist)
-            sendBlockPacket(packet, Forward, Rst, seq, 0); // useless
-        else
-            sendBlockPacket(packet, Forward, Rst, nextSeq, ack);
+    if (forwardRst_) {
+        sendForwardBlockPacket(packet); // useless
         _blocked = true;
     }
-    if (backwardBlockType_ == Fin) {
-        if (!synExist) {
-            sendBlockPacket(packet, Backward, Fin, ack, nextSeq, backwardFinMsgStr_);
-            _blocked = true;
-        }
+    if (backwardFin_) {
+        sendBackwardBlockPacket(packet);
+        _blocked = true;
     }
-    if (forwardBlockType_ != None)
-        packet->ctrl.block_ = true;
+    packet->ctrl.block_ = true;
 }

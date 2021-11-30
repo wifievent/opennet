@@ -1,6 +1,6 @@
-#include "opennet.h"
-#include "ip.h"
-#include "mac.h"
+#pragma once
+#include "buf.h"
+
 struct IpHdr
 {
     enum {

@@ -1,11 +1,6 @@
-#include "opennet.h"
 #include "packet.h"
-#include "buf.h"
 #include "obj.h"
-#include "intf.h"
 #include "rtm.h"
-#include "intflist.h"
-#include <vector>
 struct PcapDevice : Obj{
     int mtu_{0};
     string intfName_{""};

@@ -7,16 +7,13 @@ CONFIG += W_BUILD
 include($${PWD}/../opennet.pri)
 DESTDIR = $${PWD}/../bin
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
 SOURCES += \
     ../src/arphdr.cpp \
     ../src/buf.cpp \
     ../src/capture.cpp \
     ../src/dhcphdr.cpp \
     ../src/ethhdr.cpp \
+    ../src/ethpacket.cpp \
     ../src/icmphdr.cpp \
     ../src/intf.cpp \
     ../src/intflist.cpp \
@@ -25,6 +22,7 @@ SOURCES += \
     ../src/ip6hdr.cpp \
     ../src/iphdr.cpp \
     ../src/iphdr.cpp \
+    ../src/ippacket.cpp \
     ../src/mac.cpp \
     ../src/net.cpp \
     ../src/netinfo.cpp \
@@ -39,8 +37,6 @@ SOURCES += \
     ../src/tcpblock.cpp \
     ../src/tcphdr.cpp \
     ../src/udphdr.cpp \
-    ../src/win/winipaddapterinfo.cpp \
-    ../src/win/winipforwardtable.cpp
 
 HEADERS += \
     ../src/arphdr.h \
@@ -48,6 +44,7 @@ HEADERS += \
     ../src/capture.h \
     ../src/dhcphdr.h \
     ../src/ethhdr.h \
+    ../src/ethpacket.h \
     ../src/icmphdr.h \
     ../src/intf.h \
     ../src/intflist.h \
@@ -56,6 +53,7 @@ HEADERS += \
     ../src/ip6hdr.h \
     ../src/iphdr.h \
     ../src/iphdr.h \
+    ../src/ippacket.h \
     ../src/mac.h \
     ../src/net.h \
     ../src/netinfo.h \
@@ -70,8 +68,6 @@ HEADERS += \
     ../src/tcpblock.h \
     ../src/tcphdr.h \
     ../src/udphdr.h \
-    ../src/win/winipaddapterinfo.h \
-    ../src/win/winipforwardtable.h
 
 win32 {
 HEADERS += \
@@ -82,4 +78,3 @@ SOURCES += \
         ../src/win/wipadapterinfo.cpp \
         ../src/win/wipforwardtable.cpp
 }
-

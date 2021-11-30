@@ -1,5 +1,6 @@
-#include "opennet.h"
-
+#pragma once
+#include "ip.h"
+#include "mac.h"
 struct Buf
 {
     Buf(){};

@@ -1,12 +1,17 @@
-#pragma once
-
-#include "packet.h";
 #include "obj.h";
+#include "ethpacket.h"
 
 class Capture : Obj {
 public:
 	Capture();
 	~Capture();
+
+public:
+bool enabled_{true};
+bool autoParse_{true};
+
+protected:
+	bool autoRead_{true};
 
 protected:
 	bool doOpen() override;
@@ -19,9 +24,9 @@ public:
 	} PathType;
 
 public:
-	Packet::Result read(Packet* packet) override;
-	Packet::Result write(Buf buf) override;
-	Packet::Result write(Packet* packet) override;
+	Packet::Result read(Packet* packet);
+	Packet::Result write(Buf buf);
+	Packet::Result write(Packet* packet);
 	virtual Packet::Result relay(Packet* packet);
 	virtual Packet::Result drop(Packet* packet);
 

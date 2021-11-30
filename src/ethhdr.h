@@ -1,6 +1,4 @@
-#include "opennet.h"
-#include "ip.h"
-#include "mac.h"
+#include "buf.h"
 struct EthHdr
 {
     enum {

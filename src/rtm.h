@@ -1,6 +1,4 @@
-#include "opennet.h"
 #include "rtmentry.h"
-#include <list>
 struct Rtm : list<RtmEntry>
 {
     Rtm();

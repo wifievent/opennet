@@ -1,4 +1,3 @@
-#include "opennet.h"
 #include "buf.h"
 struct UdpHdr
 {

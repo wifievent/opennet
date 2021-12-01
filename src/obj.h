@@ -1,33 +1,35 @@
 #pragma once
 
 #include <iostream>
+#include "base.h"
 
-class Obj {
+struct Obj {
 public:
-	typedef enum {
+	enum State {
 		Closed, // 0
     Closing, // 1
 		Opening, // 2
 		Opened, // 3
-	} State;
+	};
 
     Obj();
     virtual ~Obj();
 
-	bool isActive();
+	bool active();
 
+// public -> slot
+/*public slots:
 	virtual bool open();
 	virtual bool close();
 
-// signal (must change)
-// signals:
-// 	void opened();
-// 	void closed();
+signals:
+	void opened();
+	void closed();*/
 
 protected:
 	virtual bool doOpen();
 	virtual bool doClose();
 
 protected:
-	State state{Closed};
+	State state_{Closed};
 };

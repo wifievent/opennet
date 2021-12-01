@@ -36,7 +36,7 @@ bool Obj::close() {
 	if (state == Closed)
 		return true;
 
-	if (!isActive()) {
+	if (!active()) {
     // not opened
 		std::cout << "State is " << state << std::endl;
 		return false;

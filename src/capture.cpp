@@ -63,8 +63,6 @@ Packet::Result Capture::drop(Packet* packet) {
 void Capture::run() {
 	EthPacket ethPacket;
 	IpPacket ipPacket;
-	// Dot11Packet dot11Packet;
-	// NullPacket nullPacket;
 
 	Packet* packet;
 	switch(dlt()) {
@@ -74,16 +72,10 @@ void Capture::run() {
 		case Packet::Ip:
       packet = &ipPacket;
       break;
-		// case Packet::Dot11:
-    //   packet = &dot11Packet;
-    //   break;
-		// case Packet::Null:
-    //   default: packet = &nullPacket;
-    //   break;
 	}
 
 	PathType pt = pathType();
-	while (isActive()) {
+	while (active()) {
 		Packet::Result res = read(packet);
 		if (res == Packet::None) continue;
 		if (res == Packet::Eof || res == Packet::Fail) break;
@@ -98,7 +90,8 @@ void Capture::run() {
 			if (res != Packet::Ok) {
         // warning
         std::cout << "relay return " << res << std::endl;
-			}*/
-    }
+			}
+    }*/
+	}
 }
 	// emit closed();

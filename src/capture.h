@@ -1,20 +1,18 @@
 #include "obj.h";
-#include "ethpacket.h"
+#include "ethpacket.h";
 
-class Capture : Obj {
+struct Capture : Obj {
 public:
-	Capture();
-	~Capture();
+	Capture() : Obj() {}
+	~Capture() override;
 
-public:
-bool enabled_{true};
 bool autoParse_{true};
 
 protected:
 	bool autoRead_{true};
 
 protected:
-	bool doOpen() override;
+	bool doOpen() override { close(); /* signal function */ };
 	bool doClose() override;
 
 public:
@@ -27,6 +25,7 @@ public:
 	Packet::Result read(Packet* packet);
 	Packet::Result write(Buf buf);
 	Packet::Result write(Packet* packet);
+	Packet::Result writeMtuSplit(Packet* packet, size_t mtu, Packet::Dlt dlt, Duration msleepTime = 1);
 	virtual Packet::Result relay(Packet* packet);
 	virtual Packet::Result drop(Packet* packet);
 

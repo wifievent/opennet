@@ -33,8 +33,8 @@ Packet::Result PcapCapture::read(Packet* packet) {
 		case PCAP_ERROR: {
 			char* e = pcap_geterr(pcap_);
 			if (e != nullptr && strlen(e) > 0) {
-				QString msg = QString("pcap_next_ex return -1 error=%1").arg(e);
-        // error: read failed
+				// error: read failed
+				std::cout << "pcap_next_ex return -1 error=" << e << std::endl;
 			}
 			res = Packet::Eof;
 			break;
@@ -81,13 +81,14 @@ Packet::Result PcapCapture::write(Packet* packet) {
 	return res;
 }
 
-Packet::Result GPcapCapture::relay(GPacket* packet) {
+Packet::Result PcapCapture::relay(Packet* packet) {
 	(void)packet;
-	SET_ERR(GErr::NOT_SUPPORTED, "not supported");
-	return GPacket::Fail;
+	// error: not supported
+	std::cout << "not supported" << std::endl;
+	return Packet::Fail;
 }
 
-bool GPcapCapture::pcapProcessFilter(pcap_if_t* dev) {
+bool PcapCapture::pcapProcessFilter(pcap_if_t* dev) {
 	u_int uNetMask;
 	bpf_program code;
 
@@ -95,12 +96,14 @@ bool GPcapCapture::pcapProcessFilter(pcap_if_t* dev) {
 		uNetMask = (reinterpret_cast<struct sockaddr_in*>(dev->addresses->netmask))->sin_addr.s_addr;
 	else
 		uNetMask = 0xFFFFFFFF;
-	if (pcap_compile(pcap_, &code, qPrintable(filter_), 1, uNetMask) < 0) {
-		SET_ERR(GErr::UNKNOWN, QString("error in pcap_compile %1 - %2").arg(pcap_geterr(pcap_)).arg(filter_));
+	if (pcap_compile(pcap_, &code, filter_.c_str(), 1, uNetMask) < 0) {
+		// error: unknown
+		std::cout << "error in pcap_compile " << pcap_geterr(pcap_) << " - " << filter_ << std::endl;
 		return false;
 	}
 	if (pcap_setfilter(pcap_, &code) < 0) {
-		SET_ERR(GErr::UNKNOWN, QString("error in pcap_setfilter(%1)").arg(pcap_geterr(pcap_)));
+		// error: unknown
+		std::cout << "error in pcak_setfilter(" << pcap_geterr(pcap_) << ")" << std::endl;
 		return false;
 	}
 	return true;

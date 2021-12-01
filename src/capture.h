@@ -1,7 +1,7 @@
 #include "obj.h";
-#include "ethpacket.h"
+#include "ethpacket.h";
 
-class Capture : Obj {
+struct Capture : Obj {
 public:
 	Capture() : Obj() {}
 	~Capture() override;
@@ -12,7 +12,7 @@ protected:
 	bool autoRead_{true};
 
 protected:
-	bool doOpen() override { close(); };
+	bool doOpen() override { close(); /* signal function */ };
 	bool doClose() override;
 
 public:

@@ -90,7 +90,8 @@ void Capture::run() {
 			if (res != Packet::Ok) {
         // warning
         std::cout << "relay return " << res << std::endl;
-			}*/
-    }
+			}
+    }*/
+	}
 }
 	// emit closed();

@@ -3,18 +3,16 @@
 
 class Capture : Obj {
 public:
-	Capture();
-	~Capture();
+	Capture() : Obj() {}
+	~Capture() override;
 
-public:
-bool enabled_{true};
 bool autoParse_{true};
 
 protected:
 	bool autoRead_{true};
 
 protected:
-	bool doOpen() override;
+	bool doOpen() override { close(); };
 	bool doClose() override;
 
 public:

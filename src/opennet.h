@@ -7,5 +7,5 @@
 #include <unistd.h>
 #include <list>
 #include <vector>
-typedef unsigned char byte;
 using namespace std;
+typedef unsigned char byte, *pbyte;

@@ -37,3 +37,10 @@ win32 {
     INCLUDEPATH += $$PWD/../../curl/include
     DEPENDPATH += $$PWD/../../curl/include
 }
+
+HEADERS += \
+    $$PWD/src/arpspoof.h \
+    $$PWD/src/flow.h
+
+SOURCES += \
+    $$PWD/src/arpspoof.cpp

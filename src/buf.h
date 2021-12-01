@@ -5,7 +5,7 @@ struct Buf
 {
     Buf(){};
     Buf(unsigned char* data, size_t size);
-    gbyte* data_;
+    byte* data_;
     size_t size_;
 
     bool valid() {

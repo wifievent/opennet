@@ -1,7 +1,7 @@
 #include "ippacket.h"
 
 void IpPacket::parse() {
-	gbyte* p = buf_.data_;
+    byte* p = buf_.data_;
 	uint8_t proto;
 	switch (*p & 0xF0) {  // version field
 		case 0x40: // version 4

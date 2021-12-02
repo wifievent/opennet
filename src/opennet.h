@@ -7,5 +7,6 @@
 #include <unistd.h>
 #include <list>
 #include <vector>
+#include <map>
 using namespace std;
 typedef unsigned char byte, *pbyte;

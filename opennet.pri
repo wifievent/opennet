@@ -39,8 +39,8 @@ win32 {
 }
 
 HEADERS += \
-    $$PWD/src/arpspoof.h \
-    $$PWD/src/flow.h
+    $$PWD/src/atm.h
 
 SOURCES += \
-    $$PWD/src/arpspoof.cpp
+    $$PWD/src/atm.cpp
+

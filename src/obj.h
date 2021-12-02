@@ -7,7 +7,7 @@ struct Obj {
 public:
 	enum State {
 		Closed, // 0
-    Closing, // 1
+        Closing, // 1
 		Opening, // 2
 		Opened, // 3
 	};
@@ -17,11 +17,10 @@ public:
 
 	bool active();
 
-// public -> slot
-/*public slots:
+public:
 	virtual bool open();
 	virtual bool close();
-
+/*
 signals:
 	void opened();
 	void closed();*/

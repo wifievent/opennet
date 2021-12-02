@@ -1,5 +1,5 @@
 #include "pcapdevice.h"
-PcapDevice::PcapDevice(){
+PcapDevice::PcapDevice() {
     RtmEntry* entry = rtm().getBestEntry(string("8.8.8.8"));
     if (entry != nullptr) {
         Intf* intf = entry->intf();

@@ -1,11 +1,16 @@
 #include "buf.h"
 struct UdpHdr
 {
-    uint16_t sport;
-    uint16_t dport;
-    uint16_t len;
-    uint16_t checksum;
+    uint16_t sport_;
+    uint16_t dport_;
+    uint16_t len_;
+    uint16_t checksum_;
     static Buf parseData(UdpHdr* udpHdr_);
+
+    uint16_t sport() { return sport_; }
+    uint16_t dport() { return dport_; }
+    uint16_t len() { return len_; }
+    uint16_t checksum() { return checksum_; }
 };
 typedef UdpHdr *PUdpHdr;
 

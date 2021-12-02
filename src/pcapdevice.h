@@ -1,7 +1,8 @@
 #include "packet.h"
 #include "obj.h"
 #include "rtm.h"
-struct PcapDevice : Obj
+#include "pcapcapture.h"
+struct PcapDevice : PcapCapture
 {
     int mtu_{0};
     string intfName_{""};

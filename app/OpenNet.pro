@@ -37,6 +37,7 @@ SOURCES += \
     ../src/tcpblock.cpp \
     ../src/tcphdr.cpp \
     ../src/udphdr.cpp \
+    ../src/arpspoof.cpp \
 
 HEADERS += \
     ../src/arphdr.h \
@@ -68,6 +69,9 @@ HEADERS += \
     ../src/tcpblock.h \
     ../src/tcphdr.h \
     ../src/udphdr.h \
+    ../src/arpspoof.h \
+    ../src/flow.h \
+
 
 win32 {
 HEADERS += \

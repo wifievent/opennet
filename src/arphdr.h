@@ -20,7 +20,6 @@ struct ArpHdr
     Ip sip() { return sip_; }
     Ip tip() { return tip_; }
 
-protected:
     uint8_t hrd_;
     uint16_t pro_;
     uint8_t hln_;

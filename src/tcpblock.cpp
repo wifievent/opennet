@@ -30,7 +30,7 @@ void TcpBlock::sendBackwardBlockPacket(Packet* packet) {
     backward->ethHdr_->dmac_ = packet->ethHdr_->smac_;
 
     //ip
-    backward->ipHdr_->hhlen_ = 0x44;
+    backward->ipHdr_->hlen_ = 0x44;
     backward->ipHdr_->sip_ = packet->ipHdr_->dip_;
     backward->ipHdr_->dip_ = packet->ipHdr_->sip_;
     backward->ipHdr_->tlen_ = packet->ipHdr_->hlen()*4 + packet->tcpHdr_->off()*4 + backwardFinMsg_.size();
@@ -59,7 +59,7 @@ void TcpBlock::sendForwardBlockPacket(Packet* packet) {
     forward->ethHdr_->dmac_ = packet->ethHdr_->dmac_;
 
     //ip
-    forward->ipHdr_->hhlen_ = 0x44;
+    forward->ipHdr_->hlen_ = 0x44;
     forward->ipHdr_->sip_ = packet->ipHdr_->sip_;
     forward->ipHdr_->dip_ = packet->ipHdr_->dip_;
     forward->ipHdr_->tlen_ = packet->ipHdr_->hlen()*4 + packet->tcpHdr_->off()*4;

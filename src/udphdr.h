@@ -1,4 +1,5 @@
 #include "buf.h"
+#pragma pack(push, 1)
 struct UdpHdr
 {
     uint16_t sport_;
@@ -13,4 +14,4 @@ struct UdpHdr
     uint16_t checksum() { return checksum_; }
 };
 typedef UdpHdr *PUdpHdr;
-
+#pragma pack(pop)

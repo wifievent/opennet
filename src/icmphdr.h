@@ -1,4 +1,5 @@
 #include "opennet.h"
+#pragma pack(push, 1)
 struct IcmpHdr
 {
     uint8_t type_;
@@ -7,3 +8,4 @@ struct IcmpHdr
     uint8_t unused_[4];
 };
 typedef IcmpHdr* PIcmpHdr;
+#pragma pack(pop)

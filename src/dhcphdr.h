@@ -1,4 +1,5 @@
 #include "buf.h"
+#pragma pack(push, 1)
 struct DhcpHdr
 {
     uint8_t mtype_;
@@ -56,3 +57,5 @@ struct DhcpHdr
         End = 255
     };
 };
+typedef DhcpHdr *PDhcpHdr;
+#pragma pack(pop)

@@ -38,9 +38,3 @@ win32 {
     DEPENDPATH += $$PWD/../../curl/include
 }
 
-HEADERS += \
-    $$PWD/src/atm.h
-
-SOURCES += \
-    $$PWD/src/atm.cpp
-

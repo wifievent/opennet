@@ -39,6 +39,7 @@ bool ArpSpoof::doOpen() {
 
 }
 //not need to cp
+/*
 void ArpSpoof::hostScan() {
     Ip begIp = (myIp_ & intf_->mask()) + 1;
     Ip endIp = (myIp_ | ~intf_->mask());
@@ -74,9 +75,9 @@ void ArpSpoof::hostScan() {
         if (we_.wait(rescanSleepTime_)) break;
     }
 
-}
+}*/
 
-bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip, std::string* hostName) {
+bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip) {
     UdpHdr* udpHdr = packet->udpHdr_;
     if (udpHdr == nullptr) return false;
 
@@ -86,7 +87,7 @@ bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip, std::string* hostNa
     if (dhcp.data_ == nullptr) return false;
     if (dhcp.size_ < sizeof(DhcpHdr)) return false;
 
-    DhcpHdr* dhcpHdr = DhcpHdr(dhcp.data_);
+    DhcpHdr* dhcpHdr = PDhcpHdr(dhcp.data_);
 
     bool ok = false;
     if (dhcpHdr->yourIp() != 0) { // DHCP Offer of DHCP ACK sent from server
@@ -95,23 +96,6 @@ bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip, std::string* hostNa
         ok = true;
     }
 
-    EthHdr* ethHdr = packet->ethHdr_;
-    if (ethHdr == nullptr) return false;
-    gbyte* end = packet->buf_.data_ + packet->buf_.size_;
-    DhcpHdr::Option* option = dhcpHdr->first();
-    while (true) {
-        if (option->type_ == DhcpHdr::RequestedIpAddress) {
-            *ip = ntohl(*PIp(option->value()));
-            *mac = ethHdr->smac();
-            ok = true;
-        } else if (option->type_ == DhcpHdr::HostName) {
-            QByteArray tmp(pchar(option->value()), option->len_);
-            *hostName = QString(tmp);
-        }
-        option = option->next();
-        if (option == nullptr) break;
-        if (pbyte(option) >= end) break;
-    }
     return ok;
 }
 
@@ -129,49 +113,27 @@ void ArpSpoof::detect(Packet* packet) {
     bool detected = false;
     IpHdr* ipHdr = packet->ipHdr_;
     if (ipHdr != nullptr && ipHdr->sip() != myIp_) {
-        if (processDhcp(packet, &mac, &ip, &hostName))
-            detected = true;
-        //else if (checkIp_ && processIp(ethHdr, ipHdr, &mac, &ip))
-        //	detected = true;
-    }
-
-    GArpHdr* arpHdr = packet->arpHdr_;
-    if (arpHdr != nullptr) {
-        if (checkArp_ && processArp(ethHdr, arpHdr, &mac, &ip))
+        if (processDhcp(packet, &mac, &ip))
             detected = true;
     }
 
     if (!detected) return;
 
-    if (hostName != "") {
-        Host host(mac, ip, hostName);
-        qDebug() << QString("%1 %2 %3").arg(QString(mac), QString(ip), hostName);
-        emit hostDetected(&host);
-    }
+    Flow host(mac, ip);
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    host.lastAccess_ = now;
 
-    HostMap::iterator newHost = hosts_.end();
-    {
-        QMutexLocker ml(&hosts_.m_);
-        HostMap::iterator it = hosts_.find(mac);
-        if (it == hosts_.end()) {
-            Host host(mac, ip, hostName);
-            host.lastAccess_ = et_.elapsed();
-            newHost = hosts_.insert(mac, host);
-        } else {
-            it.value().lastAccess_ = et_.elapsed();
-        }
-    }
-    if (newHost != hosts_.end()) {
-        qDebug() << QString("%1 %2").arg(QString(mac), QString(ip));
-        emit hostDetected(&newHost.value());
-    }
+    spdlog::info(" "+ std::string(mac) + " " + std::string(ip));
+    flowList_.push_back(host);
 }
+
 bool ArpSpoof::sendArpInfectAll() {
     flowList_.m_.lock();
     for (Flow& flow: flowList_) {
         if (!sendInfect(flow))
             return false;
-        std::thread::msleep(sendInterval_);
+        std::this_thread::sleep_for(std::chrono::seconds(sendInterval_));
     }
     return true;
 }
@@ -260,7 +222,7 @@ void ArpSpoof::sendRecover(Flow flow)
     arpHdr->sip_ = htonl(flow.ip_);
     arpHdr->tmac_ = gatewayMac_;
     arpHdr->tip_ = htonl(intf_->gateway());
-    device_.write(Buf(pbyte(&packet), sizeof(packet)));
+    device_->write(Buf(pbyte(&packet), sizeof(packet)));
 
     //  target send
     ethHdr->dmac_ = flow.mac_;
@@ -268,7 +230,7 @@ void ArpSpoof::sendRecover(Flow flow)
     arpHdr->sip_ = htonl(intf_->gateway());
     arpHdr->tmac_ = flow.mac_;
     arpHdr->tip_ = htonl(flow.ip_);
-    device_.write(Buf(pbyte(&packet), sizeof(packet)));
+    device_->write(Buf(pbyte(&packet), sizeof(packet)));
 }
 
 Packet::Result ArpSpoof::relay(Packet* packet) {
@@ -278,9 +240,15 @@ Packet::Result ArpSpoof::relay(Packet* packet) {
 
 void ArpSpoof::removeFlows(Flow sender) { //sender == not gateway
     {
-        flowMap_.m_.lock();
+        flowList_.m_.lock();
         sendRecover(sender);
-        flowMap_.m_.lock();
-        flowMap_.erase(sender);
+        flowList_.m_.lock();
+        std::list<Flow>::iterator iter;
+        for(iter == flowList_.begin(); iter!= flowList_.end(); iter++){
+            if(iter->ip_ == sender.ip_){
+                flowList_.erase(iter);
+                break;
+            }
+        }
     }
 }

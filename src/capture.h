@@ -22,13 +22,11 @@ public:
 	} PathType;
 
 public:
-	Packet::Result read(Packet* packet);
-	Packet::Result write(Buf buf);
-	Packet::Result write(Packet* packet);
+    Packet::Result read(Packet* packet) override;
+    Packet::Result write(Buf buf) override;
+    Packet::Result write(Packet* packet) override;
     virtual Packet::Result relay(Packet* packet);
-	Packet::Result writeMtuSplit(Packet* packet, size_t mtu, Packet::Dlt dlt, Duration msleepTime = 1);
 	virtual Packet::Result drop(Packet* packet);
-
 	virtual Packet::Dlt dlt() { return Packet::Null; }
 	virtual PathType pathType() { return OutOfPath; }
 

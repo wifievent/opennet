@@ -1,6 +1,6 @@
 #pragma once
 #include "buf.h"
-
+#pragma pack(push, 1)
 struct IpHdr
 {
     enum {
@@ -29,4 +29,4 @@ struct IpHdr
     static uint16_t calcChecksum(IpHdr* iphdr);
 };
 typedef IpHdr *PIpHdr;
-
+#pragma pack(pop)

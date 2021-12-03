@@ -1,4 +1,5 @@
 #include "ip6.h"
+#pragma pack(push, 1)
 struct Ip6Hdr
 {
     uint8_t v_pr_;
@@ -18,4 +19,4 @@ struct Ip6Hdr
     Ip6 dip() { return dip_; }
 };
 typedef Ip6Hdr *PIp6Hdr;
-
+#pragma pack(pop)

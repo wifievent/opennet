@@ -1,5 +1,5 @@
 #include "iphdr.h"
-
+#pragma pack(push, 1)
 struct TcpHdr
 {
 public:
@@ -35,3 +35,4 @@ public:
     };
 };
 typedef TcpHdr *PTcpHdr;
+#pragma pack(pop)

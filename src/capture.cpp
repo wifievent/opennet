@@ -94,4 +94,3 @@ void Capture::run() {
     }*/
 	}
 }
-	// emit closed();

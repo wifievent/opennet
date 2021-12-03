@@ -1,4 +1,5 @@
 #include "buf.h"
+#pragma pack(push, 1)
 struct EthHdr
 {
     enum {
@@ -15,3 +16,4 @@ struct EthHdr
     Mac dmac(){ return dmac_; }
 };
 typedef EthHdr *PEthHdr;
+#pragma pack(pop)

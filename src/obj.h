@@ -23,10 +23,6 @@ public:
 public:
 	virtual bool open();
 	virtual bool close();
-    virtual Packet::Result read(Packet* packet) = 0;
-    virtual Packet::Result write(Buf buf) = 0;
-    virtual Packet::Result write(Packet* packet) = 0;
-    Packet::Result writeMtuSplit(Packet* packet, size_t mtu);
 /*
 signals:
 	void opened();

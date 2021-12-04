@@ -24,7 +24,6 @@ public:
 	Packet::Result relay(Packet* packet) override;
 
 	Packet::Dlt dlt() override { return dlt_; }
-	PathType pathType() override { return OutOfPath; }
 
 protected:
 	bool pcapProcessFilter(pcap_if_t* dev);

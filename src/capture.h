@@ -1,34 +1,32 @@
-#include "obj.h";
-#include "ethpacket.h";
+#include "obj.h"
+#include "ethpacket.h"
 
 struct Capture : Obj {
 public:
 	Capture() : Obj() {}
 	~Capture() override;
-
+    static Capture& getInstance() {
+        static Capture capture;
+        return capture;
+    }
 bool autoParse_{true};
 
 protected:
 	bool autoRead_{true};
 
 protected:
+    //TODO
 	bool doOpen() override { close(); /* signal function */ };
 	bool doClose() override;
 
 public:
-	typedef enum {
-		InPath,
-		OutOfPath
-	} PathType;
-
-public:
-    Packet::Result read(Packet* packet) override;
-    Packet::Result write(Buf buf) override;
-    Packet::Result write(Packet* packet) override;
+    virtual Packet::Result read(Packet* packet);
+    virtual Packet::Result write(Buf buf);
+    virtual Packet::Result write(Packet* packet);
     virtual Packet::Result relay(Packet* packet);
 	virtual Packet::Result drop(Packet* packet);
 	virtual Packet::Dlt dlt() { return Packet::Null; }
-	virtual PathType pathType() { return OutOfPath; }
+    Packet::Result writeMtuSplit(Packet* packet, size_t mtu);
 
 // required check
 /*protected:

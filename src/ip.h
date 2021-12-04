@@ -4,7 +4,8 @@ struct Ip
 {
     Ip(){};
     Ip(const string& r);
-    Ip(const uint32_t r) : ip_(r) {}
+    Ip(const uint32_t r) : ip_(r) {};
+    Ip(const Ip&r): ip_(r.ip_) {};
     const static int SIZE = 4;
 
     operator uint32_t() const { return ip_; } // default -> not explicit == auto

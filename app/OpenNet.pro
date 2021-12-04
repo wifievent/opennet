@@ -2,11 +2,11 @@ CONFIG -= qt
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++11
-CONFIG += c99
-CONFIG += W_BUILD
+CONFIG += OPENNET_BUILD
 include($${PWD}/../opennet.pri)
 DESTDIR = $${PWD}/../bin
 INCLUDEPATH += $${PWD}/../include
+
 SOURCES += \
     ../src/arphdr.cpp \
     ../src/buf.cpp \

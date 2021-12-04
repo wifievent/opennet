@@ -2,22 +2,16 @@
 # include path
 #
 INCLUDEPATH *= $${PWD}/src
-
+INCLUDEPATH *= $${PWD}/include
 #
 # link library
 #
-LIBS *= -L$${PWD}/bin -lw -pthread
+LIBS *= -L$${PWD}/bin -pthread -lopennet
 
-!CONFIG(W_BUILD) {
-   PRE_TARGETDEPS *= $${PWD}/bin/libw.a
+!CONFIG(OPENNET_BUILD) {
+   PRE_TARGETDEPS *= $${PWD}/bin/libOpenNet.a
 }
 
-#
-# define
-#
-win32: DEFINES *= WOS_WIN
-linux: DEFINES *= WOS_LINUX
-macx: DEFINES *= WOS_MAC
 
 #
 # pcap
@@ -28,13 +22,6 @@ win32 {
         LIBS *= -lwpcap -lpacket -lws2_32 -liphlpapi
 }
 
+linux: LIBS *= -ldl -lpcap
 
-linux: LIBS *= -lpthread -ldl -lpcap
-
-win32 {
-    LIBS += -L$$PWD/../../curl/lib/ -lcurl
-
-    INCLUDEPATH += $$PWD/../../curl/include
-    DEPENDPATH += $$PWD/../../curl/include
-}
 

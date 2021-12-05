@@ -16,7 +16,7 @@ protected:
 
 protected:
     //TODO
-	bool doOpen() override { close(); /* signal function */ };
+    bool doOpen() override;
 	bool doClose() override;
 
 public:

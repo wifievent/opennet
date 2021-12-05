@@ -4,6 +4,7 @@
 #include "base.h"
 #include "packet.h"
 #include "buf.h"
+#include "json.h"
 
 struct Obj {
 public:
@@ -20,13 +21,11 @@ public:
     virtual ~Obj();
 	bool active();
 
+    virtual void load(Json::Value& json);
+    virtual void save(Json::Value& json);
 public:
 	virtual bool open();
 	virtual bool close();
-/*
-signals:
-	void opened();
-	void closed();*/
 
 protected:
 	virtual bool doOpen();

@@ -64,3 +64,10 @@ bool Obj::doClose() {
 	std::cout << "virtual function call" << std::endl;
 	return false;
 }
+void Obj::load(Json::Value& json) {
+    (void)json;
+}
+
+void Obj::save(Json::Value& json) {
+    (void)json;
+}

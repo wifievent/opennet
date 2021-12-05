@@ -24,4 +24,10 @@ win32 {
 
 linux: LIBS *= -ldl -lpcap
 
+HEADERS += \
+    $$PWD/src/appjson.h
+
+SOURCES += \
+    $$PWD/src/appjson.cpp
+
 

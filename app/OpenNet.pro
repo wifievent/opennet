@@ -71,6 +71,7 @@ HEADERS += \
     ../src/udphdr.h \
     ../src/arpspoof.h \
     ../src/flow.h \
+    json.h
 
 
 win32 {

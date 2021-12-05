@@ -26,6 +26,7 @@ bool GCapture::doClose() {
 }*/
 
 Packet::Result Capture::read(Packet* packet) {
+  //for packet clear;
   (void)packet;
   // virtual function call
 	std::cout << "virtual function call" << std::endl;
@@ -78,6 +79,11 @@ void Capture::run() {
 		Packet::Result res = read(packet);
 		if (res == Packet::None) continue;
 		if (res == Packet::Eof || res == Packet::Fail) break;
+
+        if (packet->ctrl.block_)
+            res = drop(packet);
+        else
+            res = relay(packet);
 	}
 }
 

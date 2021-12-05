@@ -12,9 +12,9 @@ struct PcapDevice : PcapCapture
     Rtm& rtm() { return rtm_; }
     Intf* intf() { return intf_; }
     IntfList* intfList() { return intfList_; }
-    Packet::Result write(Buf buf);
-    Packet::Result write(Packet* packet);
-    Packet::Dlt dlt() { return dlt_; }
+    Packet::Result write(Buf buf) override;
+    Packet::Result write(Packet* packet) override;
+    Packet::Dlt dlt() override { return dlt_; }
     Packet::Result writeMtuSplit(Packet* packet, size_t mtu);
     PcapDevice();
     ~PcapDevice(){close();}

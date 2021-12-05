@@ -1,7 +1,10 @@
 #include "arpspoof.h"
 bool ArpSpoof::doOpen() {
-    intf_ = NetInfo::instance().intfList().findByName(intfName_);
-    gwIp_ = intf()->gateway();
+    //find best interface
+    RtmEntry* rtm = NetInfo::instance().rtm().getBestEntry(Ip("8.8.8.8"));
+    intf_ = rtm->intf();
+    gwIp_ = intf_->gateway();
+    intfName_ = rtm->intfName_;
 
     myIp_ = intf_->ip();
     myMac_ = intf_->mac();
@@ -149,7 +152,7 @@ void ArpSpoof::detect(Packet* packet) {
 }
 
 bool ArpSpoof::sendArpInfectAll() {
-    infectionList_.m_.lock();
+    std::unique_lock<std::mutex> lock(infectionList_.m_);
     for (Flow& flow: infectionList_) {
         if (!sendInfect(flow))
             return false;
@@ -260,9 +263,8 @@ Packet::Result ArpSpoof::relay(Packet* packet) {
 
 void ArpSpoof::removeFlows(Flow sender) { //sender == not gateway
     {
-        infectionList_.m_.lock();
+        std::unique_lock<std::mutex> lock(infectionList_.m_);
         sendRecover(sender);
-        infectionList_.m_.lock();
         std::list<Flow>::iterator iter;
         for(iter = infectionList_.begin(); iter!= infectionList_.end(); iter++) {
             if(iter->ip_ == sender.ip_){

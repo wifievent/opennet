@@ -15,9 +15,9 @@ struct ArpSpoof : PcapDevice
         std::mutex m_;
     } infectionList_;
 
-    struct TimeSet : std::set<Flow> { //for check time
+    struct TimeMap : std::map<Ip, struct timeval> { //for check time
         std::mutex m_;
-    } timeSet_;
+    } timeMap_;
 
     Ip myIp_;
     Mac myMac_;

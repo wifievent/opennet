@@ -24,5 +24,8 @@ win32 {
 
 linux: LIBS *= -ldl -lpcap
 
+HEADERS += \
+    $$PWD/src/json.h
+
 
 

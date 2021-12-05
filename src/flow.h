@@ -7,6 +7,7 @@ struct Flow {
     Mac mac_;
     Ip ip_;
     struct timeval lastAccess_;
+
     bool operator < (const Flow& flow) const {
         if (this->ip_ < flow.ip_) return true;
         if (this->ip_ > flow.ip_) return false;

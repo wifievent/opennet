@@ -14,10 +14,6 @@ bool autoParse_{true};
 protected:
 	bool autoRead_{true};
 
-protected:
-    //TODO
-    bool doOpen() override;
-	bool doClose() override;
 
 public:
     virtual Packet::Result read(Packet* packet);

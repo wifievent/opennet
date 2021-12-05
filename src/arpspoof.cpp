@@ -36,7 +36,7 @@ bool ArpSpoof::doOpen() {
             break;
         }
     }
-
+    return true;
 }
 //not need to cp
 /*
@@ -214,7 +214,7 @@ bool ArpSpoof::sendInfect(Flow flow)
     arpHdr->tmac_ = flow.mac_;
     arpHdr->tip_ = htonl(flow.ip_);
     Packet::Result res = device_->write(Buf(pbyte(&packet), sizeof(packet)));
-    return res = Packet::Ok;
+    return res;
 }
 
 void ArpSpoof::sendRecover(Flow flow)
@@ -264,7 +264,7 @@ void ArpSpoof::removeFlows(Flow sender) { //sender == not gateway
         sendRecover(sender);
         infectionList_.m_.lock();
         std::list<Flow>::iterator iter;
-        for(iter == infectionList_.begin(); iter!= infectionList_.end(); iter++) {
+        for(iter = infectionList_.begin(); iter!= infectionList_.end(); iter++) {
             if(iter->ip_ == sender.ip_){
                 infectionList_.erase(iter);
                 break;

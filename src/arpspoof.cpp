@@ -41,8 +41,7 @@ bool ArpSpoof::doOpen() {
     }
     return true;
 }
-//not need to cp
-/*
+
 void ArpSpoof::hostScan() {
     Ip begIp = (myIp_ & intf_->mask()) + 1;
     Ip endIp = (myIp_ | ~intf_->mask());
@@ -72,13 +71,13 @@ void ArpSpoof::hostScan() {
             if (res != Packet::Ok) {
                 break;
             }
-            if (we_.wait(sendSleepTime_)) break;
+            std::this_thread::sleep_for(std::chrono::seconds(sendSleepTime_));
         }
-        if (!active() || !pcapDevice_->active()) break;
-        if (we_.wait(rescanSleepTime_)) break;
+        if (!active()) break;
+        std::this_thread::sleep_for(std::chrono::seconds(rescanSleepTime_));
     }
 
-}*/
+}
 
 bool ArpSpoof::processArp(EthHdr* ethHdr, ArpHdr* arpHdr, Mac* mac, Ip* ip) {
     if (ethHdr->smac() != arpHdr->smac()) {
@@ -113,16 +112,16 @@ bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip) {
     return ok;
 }
 
-void ArpSpoof::detect(Packet* packet) {
+Flow ArpSpoof::detect(Packet* packet) {
     Mac mac;
     Ip ip;
     std::string hostName;
-
+    Flow host;
     EthHdr* ethHdr = packet->ethHdr_;
-    if (ethHdr == nullptr) return;
+    if (ethHdr == nullptr) return host;
 
     mac = ethHdr->smac();
-    if (mac == myMac_) return;
+    if (mac == myMac_) return host;
 
     bool detected = false;
 
@@ -139,27 +138,18 @@ void ArpSpoof::detect(Packet* packet) {
             detected = true;
     }
 
-    if (!detected) return;
+    if (!detected) return host;
 
-    Flow host(mac, ip);
+    host.mac_ = mac;
+    host.ip_ = ip;
     struct timeval now;
     gettimeofday(&now, NULL);
     host.lastAccess_ = now; // for check 15min
 
     spdlog::info(" "+ std::string(mac) + " " + std::string(ip));
-    infectionList_.push_back(host);
-    timeSet_.insert(host);
+    return host;
 }
 
-bool ArpSpoof::sendArpInfectAll() {
-    std::unique_lock<std::mutex> lock(infectionList_.m_);
-    for (Flow& flow: infectionList_) {
-        if (!sendInfect(flow))
-            return false;
-        std::this_thread::sleep_for(std::chrono::seconds(sendInterval_));
-    }
-    return true;
-}
 
 bool ArpSpoof::sendQuery(Ip tip) {
     EthArpPacket query;
@@ -261,16 +251,3 @@ Packet::Result ArpSpoof::relay(Packet* packet) {
     return write(packet);
 }
 
-void ArpSpoof::removeFlows(Flow sender) { //sender == not gateway
-    {
-        std::unique_lock<std::mutex> lock(infectionList_.m_);
-        sendRecover(sender);
-        std::list<Flow>::iterator iter;
-        for(iter = infectionList_.begin(); iter!= infectionList_.end(); iter++) {
-            if(iter->ip_ == sender.ip_){
-                infectionList_.erase(iter);
-                break;
-            }
-        }
-    }
-}

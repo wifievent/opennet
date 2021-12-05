@@ -1,13 +1,6 @@
-#include "spdlog/spdlog.h"
 #include "flow.h"
 #include "netinfo.h"
 #include "dhcphdr.h"
-
-struct EthArpPacket
-{
-    EthHdr ethHdr_;
-    ArpHdr arpHdr_;
-};
 
 struct ArpSpoof : PcapDevice
 {
@@ -38,3 +31,14 @@ protected:
     bool doClose() override;
 };
 
+struct EthArpPacket
+{
+    struct TimeSet : std::set<Flow> { //for check time
+        std::mutex m_;
+    } timeSet_;
+
+    std::string redirectpage_ = "http://wifievent.io";
+    ArpSpoof arpspoof_;
+    EthHdr ethHdr_;
+    ArpHdr arpHdr_;
+};

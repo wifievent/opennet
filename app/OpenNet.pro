@@ -8,6 +8,7 @@ DESTDIR = $${PWD}/../bin
 INCLUDEPATH += $${PWD}/../include
 
 SOURCES += \
+    ../src/appjson.cpp \
     ../src/arphdr.cpp \
     ../src/buf.cpp \
     ../src/capture.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
     ../src/arpspoof.cpp \
 
 HEADERS += \
+    ../src/appjson.h \
     ../src/arphdr.h \
     ../src/buf.h \
     ../src/capture.h \
@@ -71,7 +73,7 @@ HEADERS += \
     ../src/udphdr.h \
     ../src/arpspoof.h \
     ../src/flow.h \
-    json.h
+    ../src/json.h
 
 
 win32 {

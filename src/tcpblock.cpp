@@ -90,14 +90,11 @@ void TcpBlock::block(Packet* packet) {
         return;
     }
 
-    bool _blocked = false;
     if (forwardRst_) {
         sendForwardBlockPacket(packet); // useless
-        _blocked = true;
     }
     if (backwardFin_) {
         sendBackwardBlockPacket(packet);
-        _blocked = true;
     }
     packet->ctrl.block_ = true;
 }

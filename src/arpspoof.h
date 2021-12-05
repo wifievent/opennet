@@ -11,9 +11,13 @@ struct EthArpPacket
 
 struct ArpSpoof : PcapDevice
 {
-    struct FlowList : std::list<Flow> { //for infection
+    struct InfectionList : std::list<Flow> { //for infection
         std::mutex m_;
-    } flowList_;
+    } infectionList_;
+
+    struct TimeSet : std::set<Flow> { //for check time
+        std::mutex m_;
+    } timeSet_;
 
     Ip myIp_;
     Mac myMac_;
@@ -34,6 +38,7 @@ struct ArpSpoof : PcapDevice
     void hostScan();
     bool sendArpInfectAll();
     void detect(Packet* packet);
+    bool processArp(EthHdr* ethHdr, ArpHdr* arpHdr, Mac* mac, Ip* ip);
     bool processDhcp(Packet* packet, Mac* mac, Ip* ip);
 
 protected:

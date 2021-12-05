@@ -77,6 +77,17 @@ void ArpSpoof::hostScan() {
 
 }*/
 
+bool ArpSpoof::processArp(EthHdr* ethHdr, ArpHdr* arpHdr, Mac* mac, Ip* ip) {
+    if (ethHdr->smac() != arpHdr->smac()) {
+        spdlog::info("ARP spoofing detected " + std::string(ethHdr->smac()) + " " + std::string(arpHdr->smac()) +" "+ std::string(arpHdr->sip()));
+        return false;
+    }
+
+    *mac = arpHdr->smac();
+    *ip = arpHdr->sip();
+    return true;
+}
+
 bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip) {
     UdpHdr* udpHdr = packet->udpHdr_;
     if (udpHdr == nullptr) return false;
@@ -111,9 +122,17 @@ void ArpSpoof::detect(Packet* packet) {
     if (mac == myMac_) return;
 
     bool detected = false;
+
+    //find by dhcp packet
     IpHdr* ipHdr = packet->ipHdr_;
     if (ipHdr != nullptr && ipHdr->sip() != myIp_) {
         if (processDhcp(packet, &mac, &ip))
+            detected = true;
+    }
+    //find by arp packet
+    ArpHdr* arpHdr = packet->arpHdr_;
+    if (arpHdr != nullptr) {
+        if (processArp(ethHdr, arpHdr, &mac, &ip))
             detected = true;
     }
 
@@ -122,15 +141,16 @@ void ArpSpoof::detect(Packet* packet) {
     Flow host(mac, ip);
     struct timeval now;
     gettimeofday(&now, NULL);
-    host.lastAccess_ = now;
+    host.lastAccess_ = now; // for check 15min
 
     spdlog::info(" "+ std::string(mac) + " " + std::string(ip));
-    flowList_.push_back(host);
+    infectionList_.push_back(host);
+    timeSet_.insert(host);
 }
 
 bool ArpSpoof::sendArpInfectAll() {
-    flowList_.m_.lock();
-    for (Flow& flow: flowList_) {
+    infectionList_.m_.lock();
+    for (Flow& flow: infectionList_) {
         if (!sendInfect(flow))
             return false;
         std::this_thread::sleep_for(std::chrono::seconds(sendInterval_));
@@ -240,13 +260,13 @@ Packet::Result ArpSpoof::relay(Packet* packet) {
 
 void ArpSpoof::removeFlows(Flow sender) { //sender == not gateway
     {
-        flowList_.m_.lock();
+        infectionList_.m_.lock();
         sendRecover(sender);
-        flowList_.m_.lock();
+        infectionList_.m_.lock();
         std::list<Flow>::iterator iter;
-        for(iter == flowList_.begin(); iter!= flowList_.end(); iter++){
+        for(iter == infectionList_.begin(); iter!= infectionList_.end(); iter++) {
             if(iter->ip_ == sender.ip_){
-                flowList_.erase(iter);
+                infectionList_.erase(iter);
                 break;
             }
         }

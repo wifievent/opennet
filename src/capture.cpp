@@ -78,19 +78,6 @@ void Capture::run() {
 		Packet::Result res = read(packet);
 		if (res == Packet::None) continue;
 		if (res == Packet::Eof || res == Packet::Fail) break;
-		// emit captured(packet);
-		
-    // required check
-    /*if (pt == InPath) {
-			if (packet->ctrl.block_)
-				res = drop(packet);
-			else
-				res = relay(packet);
-			if (res != Packet::Ok) {
-        // warning
-        std::cout << "relay return " << res << std::endl;
-			}
-    }*/
 	}
 }
 

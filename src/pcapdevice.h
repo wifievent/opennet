@@ -1,5 +1,5 @@
 #include "packet.h"
-#include "obj.h"
+#include "stateobj.h"
 #include "rtm.h"
 #include "pcapcapture.h"
 struct PcapDevice : PcapCapture
@@ -7,7 +7,7 @@ struct PcapDevice : PcapCapture
     int mtu_{0};
     string intfName_{""};
     pcap_t* pcap_{nullptr};
-    std::vector <gbyte> tempBuffer_;
+    std::vector <uint8_t> tempBuffer_;
 
     Rtm& rtm() { return rtm_; }
     Intf* intf() { return intf_; }

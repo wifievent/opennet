@@ -88,7 +88,7 @@ Packet::Result PcapDevice::writeMtuSplit(Packet* packet, size_t mtu) {
     ipHdr->tlen_ = ntohs(mtu);
     ipHdr->checksum_ = htons(IpHdr::calcChecksum(ipHdr));
 
-    gbyte* tcpDataData = tcpData.data_;
+    byte* tcpDataData = tcpData.data_;
 
     size_t ipTcpHdrSize = (ipHdr->hlen() + tcpHdr->off()) * 4;
     size_t totalTcpDataSize = packet->buf_.size_ - (sizeof(EthHdr) + ipTcpHdrSize);

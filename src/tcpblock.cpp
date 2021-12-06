@@ -3,7 +3,7 @@ bool TcpBlock::doOpen() {
     if (writer_ == nullptr) {
         return false;
     }
-    blockBuf_ = new gbyte[bufSize_];
+    blockBuf_ = new byte[bufSize_];
 
     return true;
 }

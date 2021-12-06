@@ -1,5 +1,5 @@
 #include "arpspoof.h"
-struct TcpBlock : Obj
+struct TcpBlock : StateObj
 {
 public:
     bool forwardRst_ = false;
@@ -18,7 +18,7 @@ protected:
     EthPacket blockEthPacket_;
     IpPacket blockIpPacket_;
 
-    gbyte* blockBuf_{nullptr};
+    uint8_t* blockBuf_{nullptr};
     bool doOpen() override;
     bool doClose() override;
 

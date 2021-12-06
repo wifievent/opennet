@@ -6,7 +6,7 @@ INCLUDEPATH *= $${PWD}/include
 #
 # link library
 #
-LIBS *= -L$${PWD}/bin -pthread -lopennet
+LIBS *= -L$${PWD}/bin -pthread -lOpenNet
 
 !CONFIG(OPENNET_BUILD) {
    PRE_TARGETDEPS *= $${PWD}/bin/libOpenNet.a
@@ -23,6 +23,5 @@ win32 {
 }
 
 linux: LIBS *= -ldl -lpcap
-
 
 

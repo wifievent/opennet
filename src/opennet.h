@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <iostream>
 #include <cstring>
@@ -13,4 +14,8 @@
 #include <set>
 #include "spdlog/spdlog.h"
 using namespace std;
-typedef unsigned char byte, *pbyte;
+
+typedef void *pvoid;
+typedef char *pchar;
+typedef unsigned char byte;
+typedef unsigned char *pbyte;

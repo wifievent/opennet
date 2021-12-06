@@ -42,6 +42,9 @@ bool ArpSpoof::doOpen() {
     return true;
 }
 
+bool ArpSpoof::doClose() {
+    return PcapDevice::doClose();
+}
 void ArpSpoof::hostScan() {
     Ip begIp = (myIp_ & intf_->mask()) + 1;
     Ip endIp = (myIp_ | ~intf_->mask());

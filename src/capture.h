@@ -1,9 +1,9 @@
-#include "obj.h"
+#include "stateobj.h"
 #include "ethpacket.h"
 
-struct Capture : Obj {
+struct Capture : StateObj {
 public:
-	Capture() : Obj() {}
+    Capture() {};
 	~Capture() override;
     static Capture& getInstance() {
         static Capture capture;

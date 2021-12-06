@@ -39,6 +39,7 @@ SOURCES += \
     ../src/tcphdr.cpp \
     ../src/udphdr.cpp \
     ../src/arpspoof.cpp \
+    ../src/stateobj.cpp
 
 HEADERS += \
     ../src/appjson.h \
@@ -73,7 +74,9 @@ HEADERS += \
     ../src/udphdr.h \
     ../src/arpspoof.h \
     ../src/flow.h \
-    ../src/json.h
+    ../src/json.h \
+    ../src/stateobj.h
+
 
 
 win32 {

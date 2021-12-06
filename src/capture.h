@@ -1,6 +1,6 @@
+#pragma once
 #include "stateobj.h"
 #include "ethpacket.h"
-
 struct Capture : StateObj {
 public:
     Capture() {};

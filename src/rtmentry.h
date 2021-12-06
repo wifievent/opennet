@@ -1,4 +1,4 @@
-#include "intflist.h"
+#include "intf.h"
 struct RtmEntry
 {
     Ip dst_{0};

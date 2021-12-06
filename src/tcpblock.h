@@ -1,4 +1,5 @@
-#include "arpspoof.h"
+#pragma once
+#include "pcapdevice.h"
 struct TcpBlock : StateObj
 {
 public:

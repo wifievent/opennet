@@ -1,6 +1,4 @@
 #pragma once
-
-#include <pcap.h>
 #include "capture.h"
 
 struct PcapCapture : Capture

@@ -2,7 +2,7 @@
 #include "buf.h"
 struct Intf
 {
-    Ip ip_{0};
+    Ip ip_{Ip::nullIp()};
     Mac mac_{Mac::nullMac()};
     Ip mask_{0};
     Ip gateway_{0};
@@ -17,5 +17,5 @@ struct Intf
     Ip ip(){return ip_;}
     Ip mask(){return mask_;}
     string name() const { return name_; }
-    bool isSameLanIp(Ip ip_){return (ip_and_mask_) == (ip_ & mask_);}
+    bool isSameLanIp(Ip ip_){return (ip_and_mask_) == Ip(ip_ & mask_);}
 };

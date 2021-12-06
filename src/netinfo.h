@@ -1,4 +1,6 @@
-#include "pcapdevice.h"
+#pragma once
+#include "rtm.h"
+#include "intflist.h"
 struct NetInfo // excute only one
 {
 private:

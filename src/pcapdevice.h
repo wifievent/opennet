@@ -1,7 +1,7 @@
-#include "packet.h"
-#include "stateobj.h"
-#include "rtm.h"
+#pragma once
 #include "pcapcapture.h"
+#include "ethpacket.h"
+#include "netinfo.h"
 struct PcapDevice : PcapCapture
 {
     int mtu_{0};

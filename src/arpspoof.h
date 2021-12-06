@@ -1,14 +1,13 @@
+#pragma once
+#include "pcapdevice.h"
 #include "flow.h"
-#include "netinfo.h"
 #include "dhcphdr.h"
-
 struct ArpSpoof : PcapDevice
 {
     std::condition_variable Cv_;
     Ip myIp_;
     Mac myMac_;
     PcapDevice* device_;
-    Intf* intf_;
     Mac gatewayMac_;
     int sendSleepTime_{50}; // 50 msecs
     int rescanSleepTime_{600000}; // 10 minutes

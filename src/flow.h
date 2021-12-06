@@ -6,7 +6,7 @@ struct Flow {
 
     Mac mac_{Mac::nullMac()};
     Ip ip_{0};
-    struct timeval lastAccess_{0};
+    struct timeval lastAccess_{0,0};
 
     bool operator < (const Flow& flow) const {
         if (this->ip_ < flow.ip_) return true;

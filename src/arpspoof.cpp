@@ -1,11 +1,14 @@
+#include "netinfo.h"
 #include "arpspoof.h"
 bool ArpSpoof::doOpen() {
     //find best interface
-    RtmEntry* rtm = NetInfo::instance().rtm().getBestEntry(Ip("8.8.8.8"));
-    intf_ = rtm->intf();
-    gwIp_ = intf_->gateway();
-    intfName_ = rtm->intfName_;
-
+    RtmEntry* entry = NetInfo::instance().rtm().getBestEntry(std::string("8.8.8.8"));
+    if (entry != nullptr) {
+        intf_ = entry->intf();
+        gwIp_ = intf_->gateway();
+        if (intf_ != nullptr)
+            intfName_ = intf_->name();
+    }
     myIp_ = intf_->ip();
     myMac_ = intf_->mac();
 

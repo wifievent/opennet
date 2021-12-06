@@ -18,7 +18,7 @@ bool PcapDevice::doOpen() {
         return false;
     }
 
-    intf_ = intfList()->findByName(intfName_);
+    intf_ = NetInfo::instance().intfList().findByName(intfName_);
     if (intf_ == nullptr) {
         return false;
     }
@@ -26,7 +26,7 @@ bool PcapDevice::doOpen() {
     int dataLink = pcap_datalink(pcap_);
     dlt_ = Packet::intToDlt(dataLink);
 
-    return true;
+    return PcapCapture::doOpen();
 }
 
 bool PcapDevice::doClose() {

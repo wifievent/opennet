@@ -1,7 +1,4 @@
-#include "intf.h"
-#include "obj.h"
-#include "pcapdevice.h"
-#include "ethpacket.h"
+#include "arpspoof.h"
 struct TcpBlock : Obj
 {
 public:

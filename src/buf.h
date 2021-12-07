@@ -4,11 +4,11 @@
 #include "mac.h"
 
 struct Buf final {
-    uint8_t* data_;
+    unsigned char* data_;
     size_t size_;
 
     Buf() {}
-    Buf(uint8_t* data, size_t size) : data_(data), size_(size) {}
+    Buf(unsigned char* data, size_t size) : data_(data), size_(size) {}
 
     void clear() {
         data_ = nullptr;

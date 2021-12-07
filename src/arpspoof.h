@@ -17,7 +17,7 @@ struct ArpSpoof : PcapDevice
 
     bool prepare();
     bool sendInfect(Flow flow);
-    void sendRecover(Flow flow);
+    bool sendRecover(Flow flow);
     Packet::Result relay(Packet* packet) override;
     bool sendQuery(Ip tip);
     void hostScan();
@@ -32,12 +32,6 @@ protected:
 
 struct EthArpPacket
 {
-    struct TimeSet : std::set<Flow> { //for check time
-        std::mutex m_;
-    } timeSet_;
-
-    std::string redirectpage_ = "http://wifievent.io";
-    ArpSpoof arpspoof_;
     EthHdr ethHdr_;
     ArpHdr arpHdr_;
 };

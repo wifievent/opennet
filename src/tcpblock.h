@@ -23,6 +23,6 @@ protected:
     bool doOpen() override;
     bool doClose() override;
 
-    void sendForwardBlockPacket(Packet* packet);
-    void sendBackwardBlockPacket(Packet* packet);
+    bool sendForwardBlockPacket(Packet* packet);
+    bool sendBackwardBlockPacket(Packet* packet);
 };

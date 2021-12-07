@@ -17,7 +17,7 @@ bool TcpBlock::doClose() {
     return true;
 }
 
-void TcpBlock::sendBackwardBlockPacket(Packet* packet) {
+bool TcpBlock::sendBackwardBlockPacket(Packet* packet) {
     Packet* backward = packet;
 
     //Data
@@ -48,10 +48,15 @@ void TcpBlock::sendBackwardBlockPacket(Packet* packet) {
 
     //buf
     backward->buf_.size_ = sizeof(EthHdr)+ sizeof(IpHdr) + sizeof(TcpHdr) + backwardFinMsg_.size();
-    writer_->write(backward);
+    Packet::Result res = writer_->write(backward);
+    if (res != Packet::Ok) {
+        spdlog::info("Tcpblock::backward::error");
+        return false;
+    }
+    return true;
 }
 
-void TcpBlock::sendForwardBlockPacket(Packet* packet) {
+bool TcpBlock::sendForwardBlockPacket(Packet* packet) {
     Packet* forward = packet;
 
     //ethernet
@@ -78,7 +83,12 @@ void TcpBlock::sendForwardBlockPacket(Packet* packet) {
     //buf
     forward->buf_.size_ = sizeof(EthHdr) + sizeof(IpHdr) + sizeof(TcpHdr);
 
-    writer_->write(forward);
+    Packet::Result res = writer_->write(forward);
+    if (res != Packet::Ok) {
+        spdlog::info("Tcpblock::backward::error");
+        return false;
+    }
+    return true;
 }
 
 void TcpBlock::block(Packet* packet) {

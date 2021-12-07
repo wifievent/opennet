@@ -3,7 +3,7 @@
 StateObj::~StateObj() {
   if (state_ != Closed) {
     // critical error
-    std::cout << "State is " << state_ << std::endl;
+    spdlog::critical("State is " + state_);
   }
   if (tempBuf_.data_ != nullptr) {
       delete[] tempBuf_.data_ ;

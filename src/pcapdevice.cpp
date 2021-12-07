@@ -7,6 +7,12 @@ PcapDevice::PcapDevice() {
             intfName_ = intf->name();
     }
 }
+
+Packet::Result PcapDevice::read(Packet* packet) {
+    Packet::Result res = PcapCapture::read(packet);
+    return res;
+}
+
 bool PcapDevice::doOpen() {
     if (intfName_ == "") {
         return false;
@@ -14,6 +20,7 @@ bool PcapDevice::doOpen() {
 
     char errBuf[PCAP_ERRBUF_SIZE];
     pcap_ = pcap_open_live(intfName_.c_str(), 0, 0, 0, errBuf);
+
     if (pcap_ == nullptr) {
         return false;
     }
@@ -26,7 +33,7 @@ bool PcapDevice::doOpen() {
     int dataLink = pcap_datalink(pcap_);
     dlt_ = Packet::intToDlt(dataLink);
 
-    return PcapCapture::doOpen();
+    return true;
 }
 
 bool PcapDevice::doClose() {

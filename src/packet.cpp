@@ -1,15 +1,15 @@
 #include "packet.h"
 
 void Packet::clear(){
-    udpData_.clear();
-    tcpData_.clear();
-    buf_.clear();
     ethHdr_ = nullptr;
     arpHdr_ = nullptr;
     ipHdr_ = nullptr;
     udpHdr_ = nullptr;
     tcpHdr_ = nullptr;
     icmpHdr_ = nullptr;
+    udpData_.clear();
+    tcpData_.clear();
+    buf_.clear();
 }
 
 void Packet::parse() {

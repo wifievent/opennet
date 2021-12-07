@@ -7,13 +7,15 @@ struct ArpSpoof : PcapDevice
     std::condition_variable Cv_;
     Ip myIp_;
     Mac myMac_;
-    PcapDevice* device_;
     Mac gatewayMac_;
     int sendSleepTime_{50}; // 50 msecs
     int rescanSleepTime_{600000}; // 10 minutes
+    Ip gwIp_;
+    Mac gwMac_;
 
     ArpSpoof(){};
 
+    bool prepare();
     bool sendInfect(Flow flow);
     void sendRecover(Flow flow);
     Packet::Result relay(Packet* packet) override;
@@ -24,8 +26,6 @@ struct ArpSpoof : PcapDevice
     bool processDhcp(Packet* packet, Mac* mac, Ip* ip);
 
 protected:
-    Ip gwIp_;
-    Mac gwMac_;
     bool doOpen() override;
     bool doClose() override;
 };

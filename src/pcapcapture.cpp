@@ -26,7 +26,7 @@ bool PcapCapture::doClose() {
 Packet::Result PcapCapture::read(Packet* packet) {
 	packet->clear();
 	pcap_pkthdr* pktHdr;
-	int i = pcap_next_ex(pcap_, &pktHdr, const_cast<const u_char**>(&(packet->buf_.data_)));
+    int i = pcap_next_ex(pcap_, &pktHdr, const_cast<const u_char**>(&(packet->buf_.data_)));
 	if (state_ != Opened) return Packet::Fail; // may be pcap_close called
 	Packet::Result res;
 	switch (i) {
@@ -55,7 +55,7 @@ Packet::Result PcapCapture::read(Packet* packet) {
 		default: // packet captured
 			packet->ts_ = pktHdr->ts;
 			packet->buf_.size_ = pktHdr->caplen;
-			if (autoParse_) packet->parse();
+            packet->parse();
 			res = Packet::Ok;
 			break;
 	}

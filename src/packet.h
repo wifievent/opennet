@@ -7,6 +7,8 @@
 struct Packet
 {
     Packet() { clear();}
+    Packet(const Packet& r);
+    virtual ~Packet() {}
     enum Result{
       Ok = 1,
       Fail = -1,

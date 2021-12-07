@@ -3,16 +3,12 @@ bool TcpBlock::doOpen() {
     if (writer_ == nullptr) {
         return false;
     }
-    blockBuf_ = new byte[bufSize_];
+
 
     return true;
 }
 
 bool TcpBlock::doClose() {
-    if (blockBuf_ != nullptr) {
-        delete[] blockBuf_;
-        blockBuf_ = nullptr;
-    }
 
     return true;
 }
@@ -48,11 +44,16 @@ bool TcpBlock::sendBackwardBlockPacket(Packet* packet) {
 
     //buf
     backward->buf_.size_ = sizeof(EthHdr)+ sizeof(IpHdr) + sizeof(TcpHdr) + backwardFinMsg_.size();
-    Packet::Result res = writer_->write(backward);
-    if (res != Packet::Ok) {
-        spdlog::info("Tcpblock::backward::error");
-        return false;
+    Packet::Result res;
+    for (int i = 0 ; i < 3 ; i++) {
+        res = writer_->write(backward);
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Tcpblock::backward::error");
+            return false;
+        }
     }
+    spdlog::info("Tcpblock::backward::success");
     return true;
 }
 
@@ -83,11 +84,16 @@ bool TcpBlock::sendForwardBlockPacket(Packet* packet) {
     //buf
     forward->buf_.size_ = sizeof(EthHdr) + sizeof(IpHdr) + sizeof(TcpHdr);
 
-    Packet::Result res = writer_->write(forward);
-    if (res != Packet::Ok) {
-        spdlog::info("Tcpblock::backward::error");
-        return false;
+    Packet::Result res;
+    for (int i = 0 ; i < 3 ; i++) {
+        res = writer_->write(forward);
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Tcpblock::forward::error");
+            return false;
+        }
     }
+    spdlog::info("Tcpblock::forward::success");
     return true;
 }
 
@@ -101,7 +107,7 @@ void TcpBlock::block(Packet* packet) {
     }
 
     if (forwardRst_) {
-        sendForwardBlockPacket(packet); // useless
+        sendForwardBlockPacket(packet);
     }
     if (backwardFin_) {
         sendBackwardBlockPacket(packet);

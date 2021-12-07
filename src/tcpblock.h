@@ -7,6 +7,7 @@ public:
     bool forwardFin_ = false;
     bool backwardRst_ = false;
     bool backwardFin_ = false;
+    int sendSleepTime_{50}; // 50 msecs
 
     Intf intf_;
     bool enabled_ = true;
@@ -19,7 +20,6 @@ protected:
     EthPacket blockEthPacket_;
     IpPacket blockIpPacket_;
 
-    uint8_t* blockBuf_{nullptr};
     bool doOpen() override;
     bool doClose() override;
 

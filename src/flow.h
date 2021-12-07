@@ -2,15 +2,17 @@
 struct Flow {
 
     Flow() {};
-    Flow(Mac mac, Ip ip) : mac_(mac), ip_(ip) {}
+    Flow(Mac tmac, Ip tip,Mac smac, Ip sip) : tmac_(tmac), tip_(tip), smac_(smac), sip_(sip) {}
 
-    Mac mac_{Mac::nullMac()};
-    Ip ip_{0};
+    Mac tmac_{Mac::nullMac()};
+    Ip tip_{0};
+    Mac smac_{Mac::nullMac()};
+    Ip sip_{0};
     struct timeval lastAccess_{0,0};
 
     bool operator < (const Flow& flow) const {
-        if (this->ip_ < flow.ip_) return true;
-        if (this->ip_ > flow.ip_) return false;
+        if (this->tip_ < flow.tip_) return true;
+        if (this->tip_ > flow.tip_) return false;
         return false;
     }
 };

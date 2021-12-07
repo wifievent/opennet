@@ -9,11 +9,9 @@ bool ArpSpoof::prepare()
     while (true) {
         //find gateway mac
         std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_*2));
-        for(int i =0; i<3; i++) {
-            sendQuery(gwIp_);
-            spdlog::info("Gateway ip" + std::string(gwIp_));
-            std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
-        }
+        sendQuery(gwIp_);
+        spdlog::info("Gateway ip" + std::string(gwIp_));
+
         EthPacket packet;
         Packet::Result res = read(&packet);
         if (res == Packet::Eof) {
@@ -108,13 +106,12 @@ bool ArpSpoof::processArp(EthHdr* ethHdr, ArpHdr* arpHdr, Mac* mac, Ip* ip)
 {
     //already infected
     if (ethHdr->smac() != arpHdr->smac()) {
-        spdlog::info("ARP spoofing detected by arp" + std::string(ethHdr->smac()) + " " + std::string(arpHdr->smac()) +" "+ std::string(arpHdr->sip()));
+        spdlog::info("ARP spoofing detected by arp " + std::string(ethHdr->smac()) + " " + std::string(arpHdr->smac()) +" "+ std::string(arpHdr->sip()));
         return false;
     }
-
     *mac = arpHdr->smac();
     *ip = arpHdr->sip();
-    spdlog::info("Host detected by arp" + std::string(*mac) + " " + std::string(*ip));
+    spdlog::info("Host detected by arp " + std::string(*mac) + " " + std::string(*ip));
     return true;
 }
 
@@ -137,7 +134,7 @@ bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip)
         *ip = dhcpHdr->yourIp();
         ok = true;
     }
-    spdlog::info("Host detected by dhcp" + std::string(*mac) + " " + std::string(*ip));
+    spdlog::info("Host detected by dhcp " + std::string(*mac) + " " + std::string(*ip));
     return ok;
 }
 
@@ -200,10 +197,14 @@ bool ArpSpoof::sendQuery(Ip tip)
     query.arpHdr_.tmac_ = Mac::nullMac();
     Buf queryBuf(pbyte(&query), sizeof(query));
 
-    Packet::Result res = write(queryBuf);
-    if (res != Packet::Ok) {
-        spdlog::info("Arpspoof::sendquery::error");
-        return false;
+    Packet::Result res;
+    for(int i =0; i<3; i++) {
+        res = write(queryBuf);
+        if (res != Packet::Ok) {
+            spdlog::info("Arpspoof::sendquery::error");
+            return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
     }
     spdlog::info("Arpspoof::sendquery::correct");
     return true;
@@ -233,19 +234,32 @@ bool ArpSpoof::sendInfect(Flow flow)
     arpHdr->sip_ = htonl(flow.ip_);
     arpHdr->tmac_ = gatewayMac_;
     arpHdr->tip_ = htonl(intf_->gateway());
-    write(Buf(pbyte(&packet), sizeof(packet)));
+
+    Packet::Result res;
+    for (int i = 0 ; i < 3 ; i++) {
+        res = write(Buf(pbyte(&packet), sizeof(packet)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Arpspoof::infection::error");
+            return false;
+        }
+    }
 
     //  target send
     ethHdr->dmac_ = flow.mac_;
     arpHdr->sip_ = htonl(intf_->gateway());
     arpHdr->tmac_ = flow.mac_;
     arpHdr->tip_ = htonl(flow.ip_);
-    Packet::Result res = write(Buf(pbyte(&packet), sizeof(packet)));
 
-    if (res != Packet::Ok) {
-        spdlog::info("Arpspoof::infection::error");
-        return false;
+    for (int i = 0 ; i < 3 ; i++) {
+        res = write(Buf(pbyte(&packet), sizeof(packet)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Arpspoof::infection::error");
+            return false;
+        }
     }
+    spdlog::info("Arpspoof::infection::success "+std::string(flow.mac_)+std::string(flow.ip_));
     return res;
 }
 
@@ -274,10 +288,15 @@ bool ArpSpoof::sendRecover(Flow flow)
     arpHdr->sip_ = htonl(flow.ip_);
     arpHdr->tmac_ = gatewayMac_;
     arpHdr->tip_ = htonl(intf_->gateway());
-    Packet::Result res = write(Buf(pbyte(&packet), sizeof(packet)));
-    if (res != Packet::Ok) {
-        spdlog::info("Arpspoof::recover::error");
-        return false;
+
+    Packet::Result res;
+    for (int i = 0 ; i < 3 ; i++) {
+        res = write(Buf(pbyte(&packet), sizeof(packet)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Arpspoof::recover::error");
+            return false;
+        }
     }
 
     //  target send
@@ -286,20 +305,29 @@ bool ArpSpoof::sendRecover(Flow flow)
     arpHdr->sip_ = htonl(intf_->gateway());
     arpHdr->tmac_ = flow.mac_;
     arpHdr->tip_ = htonl(flow.ip_);
-    res = write(Buf(pbyte(&packet), sizeof(packet)));
-    if (res != Packet::Ok) {
-        spdlog::info("Arpspoof::recover::error");
-        return false;
+
+    for (int i = 0 ; i < 3 ; i++) {
+        res = write(Buf(pbyte(&packet), sizeof(packet)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Arpspoof::recover::error");
+            return false;
+        }
     }
+    spdlog::info("Arpspoof::recover::success "+std::string(flow.mac_)+std::string(flow.ip_));
     return true;
 }
 
 Packet::Result ArpSpoof::relay(Packet* packet) {
     packet->ethHdr_->smac_ = intf_->mac_;
-    Packet::Result res = write(packet);
-    if (res != Packet::Ok) {
-        spdlog::info("Arpspoof::relay::error");
-        return res;
+    Packet::Result res;
+    for (int i = 0 ; i < 3 ; i++) {
+        res = write(packet);
+        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
+        if (res != Packet::Ok) {
+            spdlog::info("Arpspoof::relay::error");
+            return res;
+        }
     }
     return res;
 }

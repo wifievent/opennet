@@ -92,12 +92,12 @@ Packet::Result PcapDevice::writeMtuSplit(Packet* packet, size_t mtu) {
     tempBuffer_.resize(packet->buf_.size_);
     memcpy(tempBuffer_.data(), packet->buf_.data_, packet->buf_.size_);
 
-    ipHdr->tlen_ = ntohs(mtu);
-    ipHdr->checksum_ = htons(IpHdr::calcChecksum(ipHdr));
+    ipHdr->len_ = ntohs(mtu);
+    ipHdr->sum_ = htons(IpHdr::calcChecksum(ipHdr));
 
     byte* tcpDataData = tcpData.data_;
 
-    size_t ipTcpHdrSize = (ipHdr->hlen() + tcpHdr->off()) * 4;
+    size_t ipTcpHdrSize = (ipHdr->hl() + tcpHdr->off()) * 4;
     size_t totalTcpDataSize = packet->buf_.size_ - (sizeof(EthHdr) + ipTcpHdrSize);
     while (true) {
         if (ipTcpHdrSize + totalTcpDataSize <= mtu) break;
@@ -105,17 +105,17 @@ Packet::Result PcapDevice::writeMtuSplit(Packet* packet, size_t mtu) {
         packet->buf_.size_ = sizeof(EthHdr) + mtu;
         size_t onceTcpDataSize = mtu - ipTcpHdrSize;
         //qDebug() << "onceTcpDataSize =" << onceTcpDataSize; // gilgil temp 2021.07.10
-        tcpHdr->checksum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
+        tcpHdr->sum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
         write(packet->buf_);
         usleep(1000);
 
-        tcpHdr->seqnum_ = htonl(tcpHdr->seqnum() + onceTcpDataSize); // next seq
+        tcpHdr->seq_ = htonl(tcpHdr->seq() + onceTcpDataSize); // next seq
         totalTcpDataSize -= onceTcpDataSize;
         memcpy(tcpDataData, tcpDataData + onceTcpDataSize, totalTcpDataSize); // next data
     }
-    ipHdr->tlen_ = ntohs(ipTcpHdrSize + totalTcpDataSize);
-    ipHdr->checksum_ = htons(IpHdr::calcChecksum(ipHdr));
-    tcpHdr->checksum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
+    ipHdr->len_ = ntohs(ipTcpHdrSize + totalTcpDataSize);
+    ipHdr->sum_ = htons(IpHdr::calcChecksum(ipHdr));
+    tcpHdr->sum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
     packet->buf_.size_ = sizeof(EthHdr) + ipTcpHdrSize + totalTcpDataSize;
     Packet::Result res = write(packet->buf_); // gilgil temp 2021.07.10
 

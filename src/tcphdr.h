@@ -5,22 +5,24 @@ struct TcpHdr
 public:
     uint16_t sport_;
     uint16_t dport_;
-    uint32_t seqnum_;
-    uint32_t acknum_;
-    uint8_t hlen_;
-    uint16_t flag_;
+    uint32_t seq_;
+    uint32_t ack_;
+    uint8_t off_rsvd_;
+    uint8_t flags_;
     uint16_t win_;
-    uint16_t checksum_;
-    uint16_t upointer_;
+    uint16_t sum_;
+    uint16_t urp_;
 
-    uint16_t dport(){ return ntohs(dport_); }
-    uint16_t sport(){ return ntohs(sport_); }
-    uint8_t off(){ return (hlen_ & 0xF0) >> 4; }
-    uint16_t win(){ return ntohs(win_); }
-    uint16_t sum(){ return ntohs(checksum_); }
-    uint16_t flag(){ return ntohs(flag_); }
-    uint32_t seqnum(){ return ntohl(seqnum_); }
-    uint32_t acknum(){ return ntohl(acknum_); }
+    uint16_t sport() { return ntohs(sport_); }
+    uint16_t dport() { return ntohs(dport_); }
+    uint32_t seq() { return ntohl(seq_); }
+    uint32_t ack() { return ntohl(ack_); }
+    uint8_t off() { return (off_rsvd_ & 0xF0) >> 4; }
+    uint8_t rsvd() { return off_rsvd_ & 0x0F; }
+    uint8_t flags() { return flags_; }
+    uint16_t win() { return ntohs(win_); }
+    uint16_t sum() { return ntohs(sum_); }
+    uint16_t urp() { return ntohs(urp_); }
 
     static Buf parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_);
     static uint16_t calcChecksum(IpHdr* iphdr, TcpHdr* tcphdr);

@@ -1,18 +1,18 @@
 #include "tcphdr.h"
-Buf TcpHdr::parseData(PIpHdr ipHdr_,TcpHdr* tcpHdr_){
-    Buf ret;
-    ret.size_ = ipHdr_->tlen() - ipHdr_->hlen()*4 - tcpHdr_->off()*4;
-    if(ret.size_>0){
-        ret.data_ = reinterpret_cast<u_char*>(tcpHdr_ + tcpHdr_->off()*4);
-    }else{
-        ret.data_ = nullptr;
-    }
-    return ret;
+Buf TcpHdr::parseData(IpHdr* ipHdr,TcpHdr* tcpHdr)
+{
+    Buf res;
+    res.size_ = ipHdr->len() - ipHdr->hl() * 4 - tcpHdr->off() * 4;
+    if (res.size_ > 0)
+        res.data_ = reinterpret_cast<u_char*>(tcpHdr) + tcpHdr->off() * 4;
+    else
+        res.data_ = nullptr;
+    return res;
 }
 
 uint16_t TcpHdr::calcChecksum(IpHdr* ipHdr, TcpHdr* tcpHdr) {
     uint32_t res = 0;
-    int tcpHdrDataLen = ipHdr->hlen() - sizeof(IpHdr);
+    int tcpHdrDataLen = ipHdr->len() - sizeof(IpHdr);
 
     // Add tcpHdr & data buffer as array of uint16_t
     uint16_t* p = reinterpret_cast<uint16_t*>(tcpHdr);

@@ -3,8 +3,6 @@ bool TcpBlock::doOpen() {
     if (writer_ == nullptr) {
         return false;
     }
-
-
     return true;
 }
 
@@ -15,35 +13,41 @@ bool TcpBlock::doClose() {
 
 bool TcpBlock::sendBackwardBlockPacket(Packet* packet) {
     Packet* backward = packet;
-
-    //Data
-    packet->tcpData_.data_ = pbyte(packet->tcpHdr_) + sizeof(TcpHdr);
-    memcpy(backward->tcpData_.data_,backwardFinMsg_.c_str(),backwardFinMsg_.size());
+    TcpHdr* tcpHdr = backward->tcpHdr_;
+    backward->tcpData_.data_ = pbyte(tcpHdr) + sizeof(TcpHdr);
+    memcpy(backward->tcpData_.data_, backwardFinMsg_.c_str(), backwardFinMsg_.size());
     backward->tcpData_.size_ = backwardFinMsg_.size();
+    std::swap(tcpHdr->sport_, tcpHdr->dport_);
+    tcpHdr->seq_ = htonl(tcpHdr->ack());
+    tcpHdr->ack_ = htonl(tcpHdr->seq() + packet->tcpData_.size_ + ((packet->tcpHdr_->flags() & TcpHdr::Ack) != 0 || (packet->tcpHdr_->flags() & TcpHdr::Fin) != 0 ? 1 : 0));
+    tcpHdr->flags_ = TcpHdr::Fin | TcpHdr::Ack | TcpHdr::Psh;
+    tcpHdr->off_rsvd_ = (sizeof(TcpHdr) / 4) << 4;
+    tcpHdr->flags_ &= ~TcpHdr::Syn;
 
-    //ethernet
-    backward->ethHdr_->smac_ = intf_.mac_;
-    backward->ethHdr_->dmac_ = packet->ethHdr_->smac_;
+    IpHdr* ipHdr = backward->ipHdr_;
+    ipHdr->len_ = htons(sizeof(IpHdr) + sizeof(TcpHdr) + backwardFinMsg_.size());
+    ipHdr->tos_ = 0x44;
+    ipHdr->ttl_ = 0x80;
+    std::swap(ipHdr->sip_, ipHdr->dip_);
 
-    //ip
-    backward->ipHdr_->hlen_ = 0x44;
-    backward->ipHdr_->sip_ = packet->ipHdr_->dip_;
-    backward->ipHdr_->dip_ = packet->ipHdr_->sip_;
-    backward->ipHdr_->tlen_ = packet->ipHdr_->hlen()*4 + packet->tcpHdr_->off()*4 + backwardFinMsg_.size();
-    backward->ipHdr_->ttl_ = 128;
-    backward->ipHdr_->checksum_ = backward->ipHdr_->calcChecksum(backward->ipHdr_);
+    tcpHdr->sum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
+    ipHdr->sum_ = htons(IpHdr::calcChecksum(ipHdr));
 
-    //tcp
-    backward->tcpHdr_->sport_ = packet->tcpHdr_->dport_;
-    backward->tcpHdr_->dport_ = packet->tcpHdr_->sport_;
-    backward->tcpHdr_->seqnum_ = packet->tcpHdr_->acknum_;
-    backward->tcpHdr_->acknum_ = packet->tcpHdr_->seqnum_ + backwardFinMsg_.size();
-    backward->tcpHdr_->hlen_ = ((packet->tcpHdr_->off()*4 + backwardFinMsg_.size())/4 & 0xF) << 4;
-    backward->tcpHdr_->flag_ = uint16_t(0b10011);
-    backward->tcpHdr_->checksum_ = backward->tcpHdr_->calcChecksum(backward->ipHdr_,backward->tcpHdr_);
+    PcapDevice* pcapDevice = dynamic_cast<PcapDevice*>(writer_);
+    if (pcapDevice != nullptr && packet->ethHdr_ != nullptr) {
+        EthHdr* ethHdr = backward->ethHdr_;
+        Mac myMac = pcapDevice->intf()->mac();
+        ethHdr->dmac_ = ethHdr->smac();
+        ethHdr->smac_ = myMac;
+    }
 
-    //buf
-    backward->buf_.size_ = sizeof(EthHdr)+ sizeof(IpHdr) + sizeof(TcpHdr) + backwardFinMsg_.size();
+    // buf size
+    size_t bufSize = 0;
+    bufSize += sizeof(IpHdr) + sizeof(TcpHdr);
+    bufSize += backwardFinMsg_.size();
+    backward->buf_.size_ = bufSize;
+
+
     Packet::Result res;
     for (int i = 0 ; i < 3 ; i++) {
         res = writer_->write(backward);
@@ -57,32 +61,35 @@ bool TcpBlock::sendBackwardBlockPacket(Packet* packet) {
     return true;
 }
 
-bool TcpBlock::sendForwardBlockPacket(Packet* packet) {
+bool TcpBlock::sendForwardBlockPacket(Packet* packet)
+{
     Packet* forward = packet;
+    TcpHdr* tcpHdr = forward->tcpHdr_;
+    tcpHdr->ack_ = htonl(tcpHdr->ack());
+    tcpHdr->seq_ = htonl(tcpHdr->seq() + packet->tcpData_.size_ + ((packet->tcpHdr_->flags() & TcpHdr::Ack) != 0 || (packet->tcpHdr_->flags() & TcpHdr::Fin) != 0 ? 1 : 0));
+    tcpHdr->flags_ = TcpHdr::Rst | TcpHdr::Ack;
+    tcpHdr->win_ = 0;
+    tcpHdr->off_rsvd_ = (sizeof(TcpHdr) / 4) << 4;
+    tcpHdr->flags_ &= ~TcpHdr::Syn;
 
-    //ethernet
-    forward->ethHdr_->smac_ = intf_.mac_;
-    forward->ethHdr_->dmac_ = packet->ethHdr_->dmac_;
+    IpHdr* ipHdr = forward->ipHdr_;
+    ipHdr->len_ = htons(sizeof(IpHdr) + sizeof(TcpHdr));
+    ipHdr->tos_ = 0x44;
 
-    //ip
-    forward->ipHdr_->hlen_ = 0x44;
-    forward->ipHdr_->sip_ = packet->ipHdr_->sip_;
-    forward->ipHdr_->dip_ = packet->ipHdr_->dip_;
-    forward->ipHdr_->tlen_ = packet->ipHdr_->hlen()*4 + packet->tcpHdr_->off()*4;
-    forward->ipHdr_->ttl_ = packet->ipHdr_->ttl_;
-    forward->ipHdr_->checksum_ = forward->ipHdr_->calcChecksum(forward->ipHdr_);
+    tcpHdr->sum_ = htons(TcpHdr::calcChecksum(ipHdr, tcpHdr));
+    ipHdr->sum_ = htons(IpHdr::calcChecksum(ipHdr));
 
-    //tcp
-    forward->tcpHdr_->sport_ = packet->tcpHdr_->sport_;
-    forward->tcpHdr_->dport_ = packet->tcpHdr_->dport_;
-    forward->tcpHdr_->seqnum_ = packet->tcpHdr_->seqnum_;
-    forward->tcpHdr_->acknum_ = packet->tcpHdr_->acknum_;
-    forward->tcpHdr_->hlen_ = (sizeof(TcpHdr)/4) << 4;
-    forward->tcpHdr_->flag_ = uint16_t(0b10110);
-    forward->tcpHdr_->calcChecksum(forward->ipHdr_,forward->tcpHdr_);
+    PcapDevice* pcapDevice = dynamic_cast<PcapDevice*>(writer_);
+    if (pcapDevice != nullptr && packet->ethHdr_ != nullptr) {
+        EthHdr* ethHdr = forward->ethHdr_;
+        Mac myMac = pcapDevice->intf()->mac();
+        ethHdr->smac_ = myMac;
+    }
 
-    //buf
-    forward->buf_.size_ = sizeof(EthHdr) + sizeof(IpHdr) + sizeof(TcpHdr);
+    size_t bufSize = 0;
+    bufSize += sizeof(IpHdr) + sizeof(TcpHdr);
+    packet->buf_.size_ = bufSize;
+
 
     Packet::Result res;
     for (int i = 0 ; i < 3 ; i++) {

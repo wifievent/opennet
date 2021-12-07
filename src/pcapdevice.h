@@ -16,6 +16,7 @@ struct PcapDevice : PcapCapture
     Packet::Result write(Packet* packet) override;
     Packet::Dlt dlt() override { return dlt_; }
     Packet::Result writeMtuSplit(Packet* packet, size_t mtu);
+    Packet::Result read(Packet* packet) override;
     PcapDevice();
     ~PcapDevice(){close();}
 

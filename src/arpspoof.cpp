@@ -75,8 +75,8 @@ void ArpSpoof::hostScan() {
     while (active()) {
         for (Ip ip = begIp; ip <= endIp; ip = ip + 1) {
             arpHdr->tip_ = htonl(ip);
-            if (!active() || !device_.active()) break;
-            Packet::Result res = device_.write(Buf(pbyte(&packet), sizeof(packet)));
+            if (!active()) break;
+            Packet::Result res = write(Buf(pbyte(&packet), sizeof(packet)));
             if (res != Packet::Ok) {
                 break;
             }
@@ -208,14 +208,14 @@ bool ArpSpoof::sendInfect(Flow flow)
     arpHdr->sip_ = htonl(flow.ip_);
     arpHdr->tmac_ = gatewayMac_;
     arpHdr->tip_ = htonl(intf_->gateway());
-    device_.write(Buf(pbyte(&packet), sizeof(packet)));
+    write(Buf(pbyte(&packet), sizeof(packet)));
 
     //  target send
     ethHdr->dmac_ = flow.mac_;
     arpHdr->sip_ = htonl(intf_->gateway());
     arpHdr->tmac_ = flow.mac_;
     arpHdr->tip_ = htonl(flow.ip_);
-    Packet::Result res = device_.write(Buf(pbyte(&packet), sizeof(packet)));
+    Packet::Result res = write(Buf(pbyte(&packet), sizeof(packet)));
     return res;
 }
 
@@ -244,7 +244,7 @@ void ArpSpoof::sendRecover(Flow flow)
     arpHdr->sip_ = htonl(flow.ip_);
     arpHdr->tmac_ = gatewayMac_;
     arpHdr->tip_ = htonl(intf_->gateway());
-    device_.write(Buf(pbyte(&packet), sizeof(packet)));
+    write(Buf(pbyte(&packet), sizeof(packet)));
 
     //  target send
     ethHdr->dmac_ = flow.mac_;
@@ -252,7 +252,7 @@ void ArpSpoof::sendRecover(Flow flow)
     arpHdr->sip_ = htonl(intf_->gateway());
     arpHdr->tmac_ = flow.mac_;
     arpHdr->tip_ = htonl(flow.ip_);
-    device_.write(Buf(pbyte(&packet), sizeof(packet)));
+    write(Buf(pbyte(&packet), sizeof(packet)));
 }
 
 Packet::Result ArpSpoof::relay(Packet* packet) {

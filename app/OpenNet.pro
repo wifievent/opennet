@@ -39,7 +39,11 @@ SOURCES += \
     ../src/tcphdr.cpp \
     ../src/udphdr.cpp \
     ../src/arpspoof.cpp \
-    ../src/stateobj.cpp
+    ../src/stateobj.cpp \
+    ../src/writable.cpp \
+    ../src/write.cpp \
+    ../src/pcapdevicewrite.cpp \
+    ../src/pcapwrite.cpp
 
 HEADERS += \
     ../src/appjson.h \
@@ -75,9 +79,11 @@ HEADERS += \
     ../src/arpspoof.h \
     ../src/flow.h \
     ../src/json.h \
-    ../src/stateobj.h
-
-
+    ../src/stateobj.h \
+    ../src/writable.h \
+    ../src/write.h \
+    ../src/pcapdevicewrite.h \
+    ../src/pcapwrite.h
 
 win32 {
 HEADERS += \

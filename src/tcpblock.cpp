@@ -36,9 +36,8 @@ bool TcpBlock::sendBackwardBlockPacket(Packet* packet) {
     PcapDevice* pcapDevice = dynamic_cast<PcapDevice*>(writer_);
     if (pcapDevice != nullptr && packet->ethHdr_ != nullptr) {
         EthHdr* ethHdr = backward->ethHdr_;
-        Mac myMac = pcapDevice->intf()->mac();
         ethHdr->dmac_ = ethHdr->smac();
-        ethHdr->smac_ = myMac;
+        ethHdr->smac_ = pcapDevice->intf()->mac();
     }
 
     // buf size
@@ -82,8 +81,7 @@ bool TcpBlock::sendForwardBlockPacket(Packet* packet)
     PcapDevice* pcapDevice = dynamic_cast<PcapDevice*>(writer_);
     if (pcapDevice != nullptr && packet->ethHdr_ != nullptr) {
         EthHdr* ethHdr = forward->ethHdr_;
-        Mac myMac = pcapDevice->intf()->mac();
-        ethHdr->smac_ = myMac;
+        ethHdr->smac_ = pcapDevice->intf()->mac();
     }
 
     size_t bufSize = 0;

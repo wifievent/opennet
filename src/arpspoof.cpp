@@ -11,6 +11,8 @@ bool ArpSpoof::prepare()
         std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_*2));
         sendQuery(gwIp_);
         spdlog::info("Gateway ip" + std::string(gwIp_));
+        spdlog::info("My ip" + std::string(myIp_));
+        spdlog::info("My mac" + std::string(myMac_));
 
         EthPacket packet;
         Packet::Result res = read(&packet);
@@ -138,6 +140,16 @@ bool ArpSpoof::processDhcp(Packet* packet, Mac* mac, Ip* ip)
     return ok;
 }
 
+bool ArpSpoof::processIp(EthHdr* ethHdr, IpHdr* ipHdr, Mac* mac, Ip* ip) {
+    Ip sip = ipHdr->sip();
+    if (sip == gwIp_) return false;
+    if (!intf_->isSameLanIp(sip)) return false;
+
+    *mac = ethHdr->smac();
+    *ip = sip;
+    return true;
+}
+
 Flow ArpSpoof::detect(Packet* packet)
 {
     Mac mac;
@@ -156,6 +168,8 @@ Flow ArpSpoof::detect(Packet* packet)
     IpHdr* ipHdr = packet->ipHdr_;
     if (ipHdr != nullptr && ipHdr->sip() != myIp_) {
         if (processDhcp(packet, &mac, &ip))
+            detected = true;
+        else if (processIp(ethHdr, ipHdr, &mac, &ip))
             detected = true;
     }
 

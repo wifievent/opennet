@@ -30,6 +30,7 @@ struct ArpSpoof : PcapDevice
     Flow detect(Packet* packet);
     bool processArp(EthHdr* ethHdr, ArpHdr* arpHdr, Mac* mac, Ip* ip);
     bool processDhcp(Packet* packet, Mac* mac, Ip* ip);
+    bool processIp(EthHdr* ethHdr, IpHdr* ipHdr, Mac* mac, Ip* ip);
     void makeArppacket(Mac dmac, Mac smac, Mac tmac, Ip tip, Ip sip);
 protected:
     bool doOpen() override;

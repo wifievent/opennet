@@ -24,6 +24,7 @@ SOURCES += \
     ../src/iphdr.cpp \
     ../src/iphdr.cpp \
     ../src/ippacket.cpp \
+    ../src/jsoncpp.cpp \
     ../src/mac.cpp \
     ../src/net.cpp \
     ../src/netinfo.cpp \
@@ -39,7 +40,8 @@ SOURCES += \
     ../src/tcphdr.cpp \
     ../src/udphdr.cpp \
     ../src/arpspoof.cpp \
-    ../src/stateobj.cpp
+    ../src/stateobj.cpp \
+    ../src/jsoncpp.cpp
 
 HEADERS += \
     ../src/appjson.h \

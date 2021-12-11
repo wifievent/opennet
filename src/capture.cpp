@@ -54,25 +54,29 @@ Packet::Result Capture::relay(Packet* packet) {
 	return Packet::Fail;
 }
 
-Packet::Result Capture::drop(Packet* packet) {
+Packet::Result Capture::drop(Packet* packet)
+{
 	(void)packet;
   // virtual function call
 	std::cout << "virtual function call" << std::endl;
 	return Packet::Ok;
 }
 
-void Capture::run() {
+void Capture::run()
+{
 	EthPacket ethPacket;
 	IpPacket ipPacket;
 
 	Packet* packet;
 	switch(dlt()) {
 		case Packet::Eth:
-      packet = &ethPacket;
-      break;
+          packet = &ethPacket;
+          break;
 		case Packet::Ip:
-      packet = &ipPacket;
-      break;
+          packet = &ipPacket;
+          break;
+        default:
+            break;
 	}
 
 	while (active()) {

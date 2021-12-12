@@ -7,4 +7,3 @@ struct IntfList: std::list<Intf>
     Mac getMac(char* intfName);
     IntfList();//find all interface
 };
-

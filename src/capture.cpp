@@ -4,26 +4,6 @@ Capture::~Capture() {
 	close();
 }
 
-// required check
-/*bool GCapture::doOpen() {
-	if (!enabled_) return true;
-
-	if (autoRead_) {
-		thread_.start();
-	}
-	return true;
-}
-
-bool GCapture::doClose() {
-	if (!enabled_) return true;
-
-	bool res = true;
-	if (autoRead_) {
-		thread_.quit();
-		res = thread_.wait();
-	}
-	return res;
-}*/
 
 Packet::Result Capture::read(Packet* packet) {
   //for packet clear;

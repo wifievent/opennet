@@ -45,14 +45,12 @@ bool ArpSpoof::prepare()
     if (!res) return false;
     spdlog::info("Arpspoof::Pcapdevice open");
 
+    //find gateway mac
+    sendQuery(gwIp_);
+    spdlog::info("Gateway ip" + std::string(gwIp_));
+    spdlog::info("My ip" + std::string(myIp_));
+    spdlog::info("My mac" + std::string(myMac_));
     while (true) {
-        //find gateway mac
-        std::this_thread::sleep_for(std::chrono::milliseconds(sendSleepTime_*2));
-        sendQuery(gwIp_);
-        spdlog::info("Gateway ip" + std::string(gwIp_));
-        spdlog::info("My ip" + std::string(myIp_));
-        spdlog::info("My mac" + std::string(myMac_));
-
         EthPacket packet;
         Packet::Result res = read(&packet);
         if (res == Packet::Eof) {
@@ -214,7 +212,7 @@ Flow ArpSpoof::detect(Packet* packet)
 
     //find by arp packet
     ArpHdr* arpHdr = packet->arpHdr_;
-    if (arpHdr != nullptr) {
+    if (arpHdr != nullptr && arpHdr->sip() != myIp_) {
         if (processArp(ethHdr, arpHdr, &mac, &ip))
             detected = true;
     }

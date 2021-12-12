@@ -24,20 +24,6 @@ public:
 	virtual Packet::Dlt dlt() { return Packet::Null; }
     Packet::Result writeMtuSplit(Packet* packet, size_t mtu);
 
-// required check
-/*protected:
-	struct Thread : GThread {
-		Thread(GCapture* capture) : GThread(capture) {}
-	protected:
-		void run() override {
-			GCapture* capture = dynamic_cast<GCapture*>(parent());
-			Q_ASSERT(capture != nullptr);
-			capture->run();
-		}
-	} thread_{this};*/
-
 	virtual void run();
 
-// signals:
-// 	void captured(GPacket* packet);
 };

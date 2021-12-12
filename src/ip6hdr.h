@@ -1,3 +1,4 @@
+#pragma once
 #include "ip6.h"
 #pragma pack(push, 1)
 struct Ip6Hdr

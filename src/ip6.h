@@ -1,3 +1,4 @@
+#pragma once
 #include "opennet.h"
 struct Ip6
 {

@@ -1,3 +1,4 @@
+#pragma once
 #include "opennet.h"
 #pragma pack(push, 1)
 struct IcmpHdr

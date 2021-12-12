@@ -1,3 +1,4 @@
+#pragma once
 #include "buf.h"
 #pragma pack(push, 1)
 struct EthHdr

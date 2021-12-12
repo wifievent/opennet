@@ -1,5 +1,7 @@
+#pragma once
 #include "buf.h"
 #pragma pack(push, 1)
+
 struct UdpHdr
 {
     uint16_t sport_;

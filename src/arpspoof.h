@@ -2,6 +2,7 @@
 #include "pcapdevice.h"
 #include "flow.h"
 #include "dhcphdr.h"
+
 struct EthArpPacket
 {
     EthHdr ethHdr_;

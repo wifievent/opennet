@@ -1,3 +1,4 @@
+#pragma once
 #include "buf.h"
 struct Flow {
 

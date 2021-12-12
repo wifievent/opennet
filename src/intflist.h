@@ -1,3 +1,4 @@
+#pragma once
 #include "intf.h"
 struct IntfList: std::list<Intf>
 {

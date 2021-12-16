@@ -18,14 +18,18 @@ struct ArpSpoof : PcapDevice
     int rescanSleepTime_{600000}; // 10 minutes
     Ip gwIp_;
     Mac gwMac_;
+    std::thread* readPacket_;
     std::mutex m;
     EthArpPacket packet;
+    bool flag{true};
+
     ArpSpoof(){};
 
     struct InfectionList : std::list<Flow> { //for infection
         std::mutex m_;
     } infectionList_;
 
+    void readPacket();
     bool prepare();
     bool sendInfect(Flow flow);
     bool sendRecover(Flow flow);

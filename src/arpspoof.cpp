@@ -39,17 +39,7 @@ Packet::Result ArpSpoof::read(Packet* packet) {
     return Packet::Fail; // remove warning: non-void function does not return a value in all control paths
 }*/
 
-bool ArpSpoof::prepare()
-{
-    bool res = PcapDevice::doOpen();
-    if (!res) return false;
-    spdlog::info("Arpspoof::Pcapdevice open");
-
-    //find gateway mac
-    sendQuery(gwIp_);
-    spdlog::info("Gateway ip" + std::string(gwIp_));
-    spdlog::info("My ip" + std::string(myIp_));
-    spdlog::info("My mac" + std::string(myMac_));
+void ArpSpoof::readPacket(){
     while (true) {
         EthPacket packet;
         Packet::Result res = read(&packet);
@@ -76,9 +66,24 @@ bool ArpSpoof::prepare()
         if (sip == gwIp_) {
             gwMac_ = smac;
             spdlog::info("Get gatewayMac!!"+std::string(gwMac_));
+            flag = false;
             break;
         }
     }
+}
+
+bool ArpSpoof::prepare()
+{
+    bool res = PcapDevice::doOpen();
+    if (!res) return false;
+    spdlog::info("Arpspoof::Pcapdevice open");
+    readPacket_ = new std::thread(&ArpSpoof::readPacket,this);
+    //find gateway mac
+    while(flag) {
+        sendQuery(gwIp_);
+        std::this_thread::sleep_for(std::chrono::seconds(sendSleepTime_));
+    }
+    readPacket_->join();
     return true;
 }
 

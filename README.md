@@ -1,6 +1,19 @@
-<h1 align="center"> 네트워크 라이브러리 "OpenNet" </h1>
+<h1 align="center"> Network Library "OpenNet" </h1>
+<h6 align="center"> 
+  OpenNet is a c++11 library that contains all the structures required for network packet analysis. Analyzing packets easily and conveniently through this library! 
+</h6>
 
-## 개발 언어
-<p align="center" style="line-height: 2;">
-  <a href="https://github.com/naver/egjs-flicking/blob/master/packages/c++-flicking/README.md" target="_blank"><img alt="C++" src="https://img.shields.io/static/v1.svg?label=&message=C++&style=flat-square&logo=C++&color=dd0031" /></a>
-</p>
+## ⚙️ Building opennet with QMake
+1. Get the source code and change to it. e.g., cloning with git:
+
+  .. code:: bash
+  
+     $ git clone https://github.com/wifievent/opennet.git
+     $ cd app
+
+2. Run QMake to configure the build tree.
+
+  .. code:: bash
+  
+     $ qmake
+     $ make

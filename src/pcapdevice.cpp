@@ -19,7 +19,7 @@ bool PcapDevice::doOpen() {
     }
 
     char errBuf[PCAP_ERRBUF_SIZE];
-    pcap_ = pcap_open_live(intfName_.c_str(), 0, 0, 0, errBuf);
+    pcap_ = pcap_open_live(intfName_.c_str(), 32764, 1, 1, errBuf);
 
     if (pcap_ == nullptr) {
         return false;
